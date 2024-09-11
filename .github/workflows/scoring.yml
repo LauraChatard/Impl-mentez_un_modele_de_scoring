@@ -1,0 +1,37 @@
+name: Deploy to Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main  # Déclenche le workflow sur des commits dans la branche principale
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+    name: Package model
+      run: zip -r model-package.zip MLmodel.pkl
+
+    - name: Upload model to S3
+      uses: aws-actions/s3-sync@v1
+      with:
+        args: sync model-package.zip s3://elasticbeanstalk-eu-north-1-182399693743/MLmodel
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
