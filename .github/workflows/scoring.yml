@@ -13,9 +13,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Build
-      run: npm run build
-
     # Packaging the model
     - name: Package model
       run: zip -r model-package.zip MLmodel.pkl
