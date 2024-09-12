@@ -36,7 +36,7 @@ jobs:
         AWS_REGION: ${{ secrets.AWS_REGION }}
 
     # Deploy the model to Elastic Beanstalk
-     - name: Deploy to Elastic Beanstalk
+    - name: Deploy to Elastic Beanstalk
       run: |
         aws elasticbeanstalk create-application-version --application-name Scoring-client --version-label v1 --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-182399693743,S3Key=MLmodel/model-package.zip --region eu-north-1
         aws elasticbeanstalk update-environment --environment-name Scoring-client-env --version-label v1 --region eu-north-1
