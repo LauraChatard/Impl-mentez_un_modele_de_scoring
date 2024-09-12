@@ -20,23 +20,19 @@ jobs:
     - name: Package model
       run: zip -r model-package.zip MLmodel.pkl
 
-    # Syncing the model to S3
+    # Upload model to S3 using AWS CLI
     - name: Upload model to S3
-      uses: aws-actions/s3-sync@v1
-      with:
-        args: sync model-package.zip s3://elasticbeanstalk-eu-north-1-182399693743/MLmodel
+      run: |
+        aws s3 cp model-package.zip s3://elasticbeanstalk-eu-north-1-182399693743/MLmodel/
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
 
-    # Dataset already exists in S3, no need to upload again
-    # You can refer to the dataset directly in your application code
-
     # Deploy the model to Elastic Beanstalk
     - name: Deploy to Elastic Beanstalk
       run: |
-        aws elasticbeanstalk create-application-version --application-name your-app --version-label v1 --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-182399693743,S3Key=model-package.zip
+        aws elasticbeanstalk create-application-version --application-name your-app --version-label v1 --source-bundle S3Bucket=elasticbeanstalk-eu-north-1-182399693743,S3Key=MLmodel/model-package.zip
         aws elasticbeanstalk update-environment --environment-name your-env --version-label v1
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
