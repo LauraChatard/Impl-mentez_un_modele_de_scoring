@@ -16,10 +16,12 @@ jobs:
     
     - name: Print repository structure
       run: |
+        - name: Print all files
+      run: |
         echo "Repository root:"
-        ls -la /home/runner/work/Implementez_un_modele_de_scoring
+        find /home/runner/work/Implementez_un_modele_de_scoring -type f
         echo "List contents of Implementez_un_modele_de_scoring:"
-        ls -la /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
+        find /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring -type f
 
     - name: Install dependencies
       run: pip install -r requirements.txt
