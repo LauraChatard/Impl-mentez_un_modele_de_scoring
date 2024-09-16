@@ -2,33 +2,51 @@ from flask import Flask, request, jsonify
 import mlflow
 import numpy as np
 import json
+import pickle
 import boto3
 import os
 
 app = Flask(__name__)
 
-# AWS S3 Configuration
-s3_client = boto3.client('s3')
+# AWS S3 configuration
+s3 = boto3.client('s3')
 bucket_name = 'elasticbeanstalk-eu-north-1-182399693743'
-model_key = 'model.pkl'
-feature_names_key = 'feature_names.json'
-local_model_path = '/tmp/model.pkl'  # Temporary path to store the downloaded model
-local_feature_names_path = '/tmp/feature_names.json'  # Temporary path to store the downloaded feature names
 
-# Download model from S3
-def download_from_s3(key, local_path):
-    s3_client.download_file(bucket_name, key, local_path)
+# Function to download a file from S3
+def download_from_s3(file_key, download_path):
+    s3.download_file(bucket_name, file_key, download_path)
 
-# Download model and feature names
-download_from_s3(model_key, local_model_path)
-download_from_s3(feature_names_key, local_feature_names_path)
+# Download model.pkl, imputer.pkl, and scaler.pkl from S3
+download_from_s3('model.pkl', 'model.pkl')
+download_from_s3('imputer.pkl', 'imputer.pkl')
+download_from_s3('scaler.pkl', 'scaler.pkl')
+download_from_s3('feature_names.json', 'feature_names.json')
+
+# Load feature names from file
+with open('feature_names.json', 'r') as f:
+    feature_names = json.load(f)
 
 # Load the model
-model = mlflow.sklearn.load_model(local_model_path)
+with open('model.pkl', 'rb') as file:
+    model = pickle.load(file)
+    print("Model loaded successfully")
 
-# Load feature names
-with open(local_feature_names_path, 'r') as f:
-    feature_names = json.load(f)
+# Load the imputer and scaler
+with open('imputer.pkl', 'rb') as file:
+    imputer = pickle.load(file)
+
+with open('scaler.pkl', 'rb') as file:
+    scaler = pickle.load(file)
+
+# Load data from JSON file (you can add a similar download function for this if needed)
+data_path = 'json_data.json'
+with open(data_path, 'r') as f:
+    data = json.load(f)
+
+print("Type of data:", type(data))
+
+# Convert JSON data to a dictionary for easy access
+data_dict = {entry['SK_ID_CURR']: entry for entry in data}
 
 @app.route("/")
 def home():
@@ -37,33 +55,33 @@ def home():
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
-        data = request.get_json()  # Get JSON data from the request
-        print(data)
-        # Print incoming data for debugging
-        print("Incoming data:", data)
+        request_data = request.get_json()
+        client_id = request_data.get('SK_ID_CURR')
 
-        # Extract only the features needed for prediction
-        features_data = {key: data[key] for key in feature_names if key in data}
-        
-        # Print the features data being used
-        print("Features data:", features_data)
+        if not client_id:
+            return jsonify({"error": "Client ID is required"}), 400
 
-        if len(features_data) != len(feature_names):
-            # Print which features are missing
-            missing_features = set(feature_names) - set(features_data.keys())
-            print("Missing features:", missing_features)
-            return jsonify({"error": "Incomplete feature data"}), 400
+        # Extract the client row from the data
+        client_row = data_dict.get(client_id)
+        if client_row is None:
+            return jsonify({"error": "Client ID not found"}), 404
 
-        # Prepare features for prediction
-        features = np.array([features_data[feature] for feature in feature_names]).reshape(1, -1)
+        # Drop the target column and prepare features for prediction
+        client_row = {key: value for key, value in client_row.items() if key in feature_names}
+        features_data = np.array([client_row[feature] for feature in feature_names]).reshape(1, -1)
+
+        # Apply the preprocessing steps: imputation and scaling
+        features_data = imputer.transform(features_data)
+        features_data = scaler.transform(features_data)
 
         # Make predictions
-        predictions = model.predict(features)
-        
-        # Return predictions as JSON
-        return jsonify({"predictions": predictions.tolist()})
+        predictions = model.predict(features_data)
+
+        # Return the formatted response
+        decision = "accepté" if predictions[0] == 1 else "refusé"
+        return f"Prêt pour le client **{client_id}** : {decision}"
+    
     except Exception as e:
-        # Print the exception for debugging
         print("Exception occurred:", str(e))
         return jsonify({"error": str(e)}), 400
 
