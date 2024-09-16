@@ -10,6 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Print working directory
+      run: pwd
+    
+    - name: List files
+      run: ls -la ${{ github.workspace }}
+    
+    - name: Install dependencies
+      run: |
+        pip install -r ${{ github.workspace }}/requirements.txt
+    
     - name: Install dependencies
       run: |
         cd /home/runner/work/Implementez_un_modele_de_scoring  # Navigate to the root directory
