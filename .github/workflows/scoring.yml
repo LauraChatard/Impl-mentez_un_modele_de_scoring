@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Print working directory
-      run: pwd
-    
-    - name: List files in the root directory
-      run: ls -la Implementez_un_modele_de_scoring
-
-    - name: Navigate to project directory
-      run: cd Implementez_un_modele_de_scoring
+    - name: Print directory structure
+      run: |
+        echo "Current directory:"
+        pwd
+        echo "List of directories:"
+        ls -la
+        echo "List of files in Implementez_un_modele_de_scoring:"
+        ls -la Implementez_un_modele_de_scoring
     
     - name: Install dependencies
       run: pip install -r requirements.txt
