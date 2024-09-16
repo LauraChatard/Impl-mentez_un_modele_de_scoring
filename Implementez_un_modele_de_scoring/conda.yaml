@@ -9,7 +9,6 @@ dependencies:
     - cffi==1.15.1
     - cloudpickle==2.2.1
     - colorama==0.4.6
-    - cytoolz==0.12.0
     - defusedxml==0.7.1
     - distributed==2023.6.0
     - jinja2==3.1.2
