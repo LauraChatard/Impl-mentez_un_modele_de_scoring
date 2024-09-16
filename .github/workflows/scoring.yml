@@ -27,12 +27,12 @@ jobs:
 
       - name: Install Cython
         run: |
-          conda activate myenv  # replace with your environment name if specified
+          conda activate mlflow-env  
           pip install cython
 
       - name: Install Python dependencies
         run: |
-          conda activate myenv  # replace with your environment name if specified
+          conda activate mlflow-env  
           pip install -r Implementez_un_modele_de_scoring/requirements.txt
 
       - name: Download files from S3
