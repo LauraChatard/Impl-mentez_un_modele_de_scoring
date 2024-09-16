@@ -22,19 +22,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install boto3
 
       - name: Download model and other files from S3
         run: |
-          pip install boto3
-          python -c "
-import boto3
-s3 = boto3.client('s3')
-bucket_name = 'elasticbeanstalk-eu-north-1-182399693743'
-s3.download_file(bucket_name, 'model.pkl', 'model.pkl')
-s3.download_file(bucket_name, 'imputer.pkl', 'imputer.pkl')
-s3.download_file(bucket_name, 'scaler.pkl', 'scaler.pkl')
-s3.download_file(bucket_name, 'feature_names.json', 'feature_names.json')
-          "
+          python download_files.py
 
       - name: Deploy to Elastic Beanstalk
         run: eb deploy
