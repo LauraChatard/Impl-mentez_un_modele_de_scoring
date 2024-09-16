@@ -20,7 +20,7 @@ jobs:
         ls -la /home/runner/work/Implementez_un_modele_de_scoring
         echo "List contents of Implementez_un_modele_de_scoring:"
         ls -la /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
-    
+
     - name: Install dependencies
       run: pip install -r requirements.txt
       working-directory: /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
