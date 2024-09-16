@@ -19,7 +19,8 @@ jobs:
           python-version: '3.11'
           
       - name: Install dependencies
-        run: pip install -r Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring/requirements.txt
+        run: |
+          pip install -r Implementez_un_modele_de_scoring/requirements.txt
         
       - name: Download files from S3
         run: |
