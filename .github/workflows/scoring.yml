@@ -19,13 +19,11 @@ jobs:
         echo "Repository root:"
         ls -la /home/runner/work/Implementez_un_modele_de_scoring
         echo "List contents of Implementez_un_modele_de_scoring:"
-        ls -la /home/runner/work/Implementez_un_modele_de_scoring
+        ls -la /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
     
     - name: Install dependencies
       run: pip install -r requirements.txt
-    
-    - name: Checkout code
-      uses: actions/checkout@v3
+      working-directory: /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
 
     # Download the model from S3
     - name: Download model from S3
