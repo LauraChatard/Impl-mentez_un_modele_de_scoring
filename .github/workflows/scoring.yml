@@ -18,11 +18,6 @@ jobs:
     
     - name: Install dependencies
       run: |
-        pip install -r ${{ github.workspace }}/requirements.txt
-    
-    - name: Install dependencies
-      run: |
-        cd /home/runner/work/Implementez_un_modele_de_scoring  # Navigate to the root directory
         pip install -r requirements.txt
     
     - name: Checkout code
