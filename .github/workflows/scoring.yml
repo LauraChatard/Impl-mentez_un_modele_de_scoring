@@ -18,16 +18,15 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: List files in project directory
+        run: |
+          ls -la /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
+        run: pip install -r requirements.txt
         working-directory: /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
-
-      - name: Install requirements
         run: |
-          pip install -r requirements.txt
-        working-directory: /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
-
+            pip install -r Implementez_un_modele_de_scoring/requirements.txt
+        
       - name: Download files from S3
         run: |
           aws s3 cp s3://elasticbeanstalk-eu-north-1-182399693743/model.pkl model.pkl
