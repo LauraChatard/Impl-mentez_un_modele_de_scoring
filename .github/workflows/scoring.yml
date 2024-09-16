@@ -17,14 +17,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.11'
-
-      - name: List files in project directory
-        run: |
-          ls -la /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
           
       - name: Install dependencies
-        run: pip install -r requirements.txt
-        working-directory: /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
+        run: pip install -r Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring/requirements.txt
         
       - name: Download files from S3
         run: |
