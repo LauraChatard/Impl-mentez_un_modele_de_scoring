@@ -16,7 +16,7 @@ jobs:
     
     - name: Print repository structure
       run: |
-        - name: Print all files
+    - name: Print all files
       run: |
         echo "Repository root:"
         find /home/runner/work/Implementez_un_modele_de_scoring -type f
