@@ -12,13 +12,15 @@ jobs:
     steps:
     - name: Print working directory
       run: pwd
-
-    - name: List files
+    
+    - name: List files in the root directory
       run: ls -la Implementez_un_modele_de_scoring
 
+    - name: Navigate to project directory
+      run: cd Implementez_un_modele_de_scoring
+    
     - name: Install dependencies
-      run: |
-        pip install -r Implementez_un_modele_de_scoring/requirements.txt
+      run: pip install -r requirements.txt
     
     - name: Checkout code
       uses: actions/checkout@v3
