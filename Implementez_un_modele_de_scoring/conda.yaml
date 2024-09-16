@@ -4,6 +4,8 @@ channels:
 dependencies:
   - python=3.11.5
   - pip<=23.1.2
+  - cytoolz>=0.12.1
+  - Cython>=0.29.36
   - pip:
     - mlflow==2.16.0
     - cffi==1.15.1
