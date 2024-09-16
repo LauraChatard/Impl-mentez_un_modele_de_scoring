@@ -10,14 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Print directory structure
+    
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Print repository structure
       run: |
-        echo "Current directory:"
-        pwd
-        echo "List of directories:"
-        ls -la
-        echo "List of files in Implementez_un_modele_de_scoring:"
-        ls -la Implementez_un_modele_de_scoring
+        echo "Repository root:"
+        ls -la /home/runner/work/Implementez_un_modele_de_scoring
+        echo "List contents of Implementez_un_modele_de_scoring:"
+        ls -la /home/runner/work/Implementez_un_modele_de_scoring
     
     - name: Install dependencies
       run: pip install -r requirements.txt
