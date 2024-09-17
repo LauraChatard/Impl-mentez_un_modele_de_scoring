@@ -3,48 +3,47 @@ name: Deploy to AWS Elastic Beanstalk
 on:
   push:
     branches:
-      - main
-
+      - main  
+      
 jobs:
   deploy:
+    name: Deploy application to AWS Elastic Beanstalk
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Set up Conda
-        uses: conda-incubator/setup-miniconda@v2
+      # AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  
+          aws-region: eu-north-1
+
+      # Install Python dependencies
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          environment-file: Implementez_un_modele_de_scoring/conda.yaml
-          auto-activate-base: false
 
-      - name: Install build essentials
-        run: sudo apt-get install -y build-essential python3-dev
-
-      - name: Install system dependencies
+      - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential libsnappy-dev
-
-      - name: Install Python dependencies
-        run: |
-          conda activate mlflow-env  
+          python -m pip install --upgrade pip
           pip install -r Implementez_un_modele_de_scoring/requirements.txt
 
-      - name: Download files from S3
-        run: |
-          aws s3 cp s3://elasticbeanstalk-eu-north-1-182399693743/model.pkl model.pkl
-          aws s3 cp s3://elasticbeanstalk-eu-north-1-182399693743/imputer.pkl imputer.pkl
-          aws s3 cp s3://elasticbeanstalk-eu-north-1-182399693743/scaler.pkl scaler.pkl
-          aws s3 cp s3://elasticbeanstalk-eu-north-1-182399693743/feature_names.json feature_names.json
+      # Deploy to Elastic Beanstalk
+      - name: Deploy to AWS Elastic Beanstalk
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-        working-directory: /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
+        run: |
+          zip -r deploy-package.zip .  
+          eb init -p python-3.11 Scoring-client-env-env --region eu-north-1  
+          eb deploy  
 
-      - name: Deploy to Elastic Beanstalk
-        run: eb deploy
-        working-directory: /home/runner/work/Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring
+      # Health check for confirmation after deployment
+      - name: Health check
+        run: |
+          curl --fail https://Scoring-client-env-env.eba-gtnvbfs3.eu-north-1.elasticbeanstalk.com || exit 1
