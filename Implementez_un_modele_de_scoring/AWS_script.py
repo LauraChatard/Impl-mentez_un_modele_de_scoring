@@ -3,7 +3,7 @@ import requests
 
 # Function to get prediction from API
 def get_prediction(sk_id_curr):
-    url = "https://elasticbeanstalk-eu-north-1-182399693743.s3.eu-north-1.amazonaws.com/predict"
+    url = "http://scoring-client-env-env.eba-gtnvbfs3.eu-north-1.elasticbeanstalk.com/"
     headers = {'Content-Type': 'application/json'}
     data = {'SK_ID_CURR': sk_id_curr}
 
