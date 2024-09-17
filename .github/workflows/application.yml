@@ -4,7 +4,7 @@ name: Deploy to AWS Elastic Beanstalk
 on:
   push:
     branches:
-      - main  # Deployment is triggered only on the 'main' branch
+      - main  # Deployment is triggered only on the 'main' branch 
 
 jobs:
   deploy:
