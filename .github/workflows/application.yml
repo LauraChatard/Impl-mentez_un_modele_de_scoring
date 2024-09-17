@@ -39,10 +39,10 @@ jobs:
         run: |
             cd Implementez_un_modele_de_scoring  # Change directory to where the project files are located
             zip -r deploy-package.zip .  # Compress the project directory into a zip file
-            eb init -p python-3.11 Projet7_application --region eu-north-1  # Initialize EB with Python 3.11 in the 'eu-north-1' region
-            eb use Projet7application-env  # Set the default environment to deploy
-            eb deploy  # Deploy the application to Elastic Beanstalk
+            #eb init -p python-3.11 Projet7_application --region eu-north-1  # Initialize EB with Python 3.11 in the 'eu-north-1' region
+            #eb use Projet7application-env  # Set the default environment to deploy
+            #eb deploy  # Deploy the application to Elastic Beanstalk
       # Step 5: Perform a health check after deployment to verify that the service is running
-      - name: Health check
-        run: |
-          curl --fail http://projet7application-env.eba-ckupmyrt.eu-north-1.elasticbeanstalk.com/ || exit 1  # Send an HTTP request to the deployed app and fail if the app is not reachable
+      #- name: Health check
+      #  run: |
+      #    curl --fail http://projet7application-env.eba-ckupmyrt.eu-north-1.elasticbeanstalk.com/ || exit 1  # Send an HTTP request to the deployed app and fail if the app is not reachable
