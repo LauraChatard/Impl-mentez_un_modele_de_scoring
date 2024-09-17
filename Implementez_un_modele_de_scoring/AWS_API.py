@@ -2,30 +2,44 @@ from flask import Flask, request, jsonify
 import numpy as np
 import json
 import pickle
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import MinMaxScaler
+import boto3
+import tempfile
 
 # Create an instance of the Flask class
 app = Flask(__name__)
 
+# AWS S3 configuration
+s3 = boto3.client('s3')
+bucket_name = 'elasticbeanstalk-eu-north-1-182399693743'
+
+def download_from_s3(key):
+    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+        s3.download_fileobj(bucket_name, key, tmp_file)
+        tmp_file.seek(0)
+        return tmp_file.name
+
 # Load feature names from file
-with open('s3://elasticbeanstalk-eu-north-1-182399693743/feature_names.json', 'r') as f:
+feature_names_path = download_from_s3('feature_names.json')
+with open(feature_names_path, 'r') as f:
     feature_names = json.load(f)
 
 # Load the model
-with open('s3://elasticbeanstalk-eu-north-1-182399693743/model.pkl', 'rb') as file:
+model_path = download_from_s3('model.pkl')
+with open(model_path, 'rb') as file:
     model = pickle.load(file)
     print("Model loaded successfully")
 
 # Load preprocessing objects
-with open('s3://elasticbeanstalk-eu-north-1-182399693743/imputer.pkl', 'rb') as file:
+imputer_path = download_from_s3('imputer.pkl')
+with open(imputer_path, 'rb') as file:
     imputer = pickle.load(file)
 
-with open('s3://elasticbeanstalk-eu-north-1-182399693743/scaler.pkl', 'rb') as file:
+scaler_path = download_from_s3('scaler.pkl')
+with open(scaler_path, 'rb') as file:
     scaler = pickle.load(file)
 
 # Load data from JSON file
-data_path = "s3://elasticbeanstalk-eu-north-1-182399693743/feature_names.json"
+data_path = download_from_s3('feature_names.json')
 with open(data_path, 'r') as f:
     data = json.load(f)
 
@@ -74,7 +88,6 @@ def predict():
         # Return plain text message
         return f"Prêt pour le client {client_id} : {decision}"
 
-    
     except Exception as e:
         print("Exception occurred:", str(e))
         return jsonify({"error": str(e)}), 400
