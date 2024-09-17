@@ -5,10 +5,11 @@ import pickle
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
 
+# Create an instance of the Flask class
 app = Flask(__name__)
 
 # Load feature names from file
-with open('feature_names.json', 'r') as f:
+with open('s3://elasticbeanstalk-eu-north-1-182399693743/feature_names.json', 'r') as f:
     feature_names = json.load(f)
 
 # Load the model
