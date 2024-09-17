@@ -45,4 +45,4 @@ jobs:
       # Step 5: Perform a health check after deployment to verify that the service is running
       - name: Health check
         run: |
-          curl --fail http://scoring-client.eu-north-1.elasticbeanstalk.com / || exit 1  # Send an HTTP request to the deployed app and fail if the app is not reachable
+          curl --fail http://scoring-client.eu-north-1.elasticbeanstalk.com/ || exit 1  # Send an HTTP request to the deployed app and fail if the app is not reachable
