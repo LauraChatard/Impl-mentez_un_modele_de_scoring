@@ -33,11 +33,7 @@ print("Type of data:", type(data))
 # Convert JSON data to a dictionary for easy access
 data_dict = {entry['SK_ID_CURR']: entry for entry in data}
 
-@app.route("/")
-def home():
-    return "API Flask Test"
-
-@app.route("/predict", methods=["POST"])
+@app.route("/", methods=["POST"])
 def predict():
     try:
         request_data = request.get_json()
