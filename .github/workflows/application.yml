@@ -1,49 +1,47 @@
 name: Deploy to AWS Elastic Beanstalk
 
+# Trigger the workflow when there's a push to the 'main' branch
 on:
   push:
     branches:
-      - main  
-      
+      - main  # Deployment is triggered only on the 'main' branch
+
 jobs:
   deploy:
     name: Deploy application to AWS Elastic Beanstalk
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # The job will run on the latest version of the Ubuntu runner
 
     steps:
+      # Step 1: Checkout the code from the GitHub repository
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3  # Uses the official GitHub action to pull the code
 
-      # AWS credentials
+      # Step 2: Configure AWS credentials from GitHub secrets
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  
-          aws-region: eu-north-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Access key defined in GitHub secrets
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Secret access key defined in GitHub secrets
+          aws-region: eu-north-1  # Specify the AWS region to deploy in
 
-      # Install Python dependencies
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
+      # Step 3: Install the Elastic Beanstalk CLI (EB CLI) for managing deployments
+      - name: Install Elastic Beanstalk CLI
         run: |
-          python -m pip install --upgrade pip
-          pip install -r Implementez_un_modele_de_scoring/requirements.txt
+          sudo apt-get update  # Update the system's package index
+          sudo apt-get install -y python3-pip  # Install pip if not present
+          pip install awsebcli  # Install the Elastic Beanstalk CLI using pip
 
-      # Deploy to Elastic Beanstalk
+      # Step 4: Deploy the application to Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Set AWS Access Key from GitHub secrets
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Set AWS Secret Access Key from GitHub secrets
         run: |
-          zip -r deploy-package.zip .  
-          eb init -p python-3.11 Scoring-client-env-env --region eu-north-1  
-          eb deploy  
+          zip -r deploy-package.zip .  # Compress the project directory into a zip file
+          eb init -p python-3.11 Scoring-client-env-env --region eu-north-1  # Initialize EB with Python 3.11 in the 'eu-north-1' region
+          eb deploy  # Deploy the application to Elastic Beanstalk
 
-      # Health check for confirmation after deployment
+      # Step 5: Perform a health check after deployment to verify that the service is running
       - name: Health check
         run: |
-          curl --fail https://Scoring-client-env-env.eba-gtnvbfs3.eu-north-1.elasticbeanstalk.com || exit 1
+          curl --fail https://Scoring-client-env-env.eba-gtnvbfs3.eu-north-1.elasticbeanstalk.com || exit 1  # Send an HTTP request to the deployed app and fail if the app is not reachable
