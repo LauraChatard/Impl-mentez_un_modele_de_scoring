@@ -43,6 +43,6 @@ jobs:
             #eb use Scoringclient-env  # Set the default environment to deploy
             #eb deploy  # Deploy the application to Elastic Beanstalk
       # Step 5: Perform a health check after deployment to verify that the service is running
-      #- name: Health check
-      #  run: |
-      #    curl --fail http://projet7application-env.eba-ckupmyrt.eu-north-1.elasticbeanstalk.com/ || exit 1  # Send an HTTP request to the deployed app and fail if the app is not reachable
+      - name: Health check
+        run: |
+          curl --fail http://scoring-client.eu-north-1.elasticbeanstalk.com / || exit 1  # Send an HTTP request to the deployed app and fail if the app is not reachable
