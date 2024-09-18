@@ -1,2 +1,2 @@
-web: gunicorn -b 0.0.0.0:5000 Implementez_un_modele_de_scoring.AWS_API:app  # Flask API running on port 5000
-streamlit: streamlit run Implementez_un_modele_de_scoring/AWS_script.py --server.port 8501  # Streamlit app running on port 8501
+web: gunicorn -b 0.0.0.0:5000 AWS_API:app  # Flask API running on port 5000
+streamlit: streamlit run AWS_script.py --server.port 8501  # Streamlit app running on port 8501
