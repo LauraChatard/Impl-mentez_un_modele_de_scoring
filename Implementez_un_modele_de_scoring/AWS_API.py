@@ -18,10 +18,6 @@ def download_from_s3(key):
         tmp_file.seek(0)
         return tmp_file.name
 
-# Load feature names from file
-feature_names_path = download_from_s3('feature_names.json')
-with open(feature_names_path, 'r') as f:
-    feature_names = json.load(f)
 
 # Load the model
 model_path = download_from_s3('model.pkl')
@@ -39,7 +35,7 @@ with open(scaler_path, 'rb') as file:
     scaler = pickle.load(file)
 
 # Load data from JSON file
-data_path = download_from_s3('feature_names.json')
+data_path = download_from_s3('json_data.json')
 with open(data_path, 'r') as f:
     data = json.load(f)
 
@@ -65,18 +61,21 @@ def predict():
         # Extract the client row from the data
         client_row = data_dict.get(client_id)
         print("Client row:", client_row)
-
+        
         if client_row is None:
             return jsonify({"error": "Client ID not found"}), 404
-
-        # Drop the target column and prepare features for prediction
-        client_row = {key: value for key, value in client_row.items() if key in feature_names}
-        client_features = np.array([client_row.get(feature, 0) for feature in feature_names]).reshape(1, -1)
-
+        
+        # Remove the target column if it exists in the client row
+        target_column = 'TARGET' 
+        client_row.pop(target_column, None)  # Safely remove the target column if it exists
+        
+        # Prepare features for prediction by extracting only the feature names
+        client_features = np.array(list(client_row.values())).reshape(1, -1)
+        
         # Preprocess the features
         client_features = imputer.transform(client_features)
         client_features = scaler.transform(client_features)
-
+        
         print("Preprocessed features data for prediction:", client_features)
 
         # Make predictions
