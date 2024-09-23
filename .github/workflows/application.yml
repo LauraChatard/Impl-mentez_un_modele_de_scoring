@@ -1,48 +1,55 @@
 name: Deploy to AWS Elastic Beanstalk
 
-# Trigger the workflow when there's a push to the 'main' branch
 on:
   push:
     branches:
-      - main  # Deployment is triggered only on the 'main' branch  
+      - main
 
 jobs:
   deploy:
     name: Deploy application to AWS Elastic Beanstalk
-    runs-on: ubuntu-latest  # The job will run on the latest version of the Ubuntu runner
+    runs-on: ubuntu-latest
 
     steps:
       # Step 1: Checkout the code from the GitHub repository
       - name: Checkout repository
-        uses: actions/checkout@v3  # Uses the official GitHub action to pull the code
- 
+        uses: actions/checkout@v3
+
       # Step 2: Configure AWS credentials from GitHub secrets
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Access key defined in GitHub secrets
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Secret access key defined in GitHub secrets
-          aws-region: eu-north-1  # Specify the AWS region to deploy in
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-north-1
 
       # Step 3: Install the Elastic Beanstalk CLI (EB CLI) for managing deployments
       - name: Install Elastic Beanstalk CLI
         run: |
-          sudo apt-get update  # Update the system's package index
-          sudo apt-get install -y python3-pip  # Install pip if not present
-          pip install awsebcli  # Install the Elastic Beanstalk CLI using pip
+          sudo apt-get update
+          sudo apt-get install -y python3-pip python3-venv  # Install pip and venv
+          pip install awsebcli
 
-      # Step 4: Deploy the application to Elastic Beanstalk
+      # Step 4: Create a virtual environment and install dependencies
+      - name: Create virtual environment and install dependencies
+        run: |
+          python3 -m venv venv  # Create a virtual environment
+          source venv/bin/activate  # Activate the virtual environment
+          pip install -r Implementez_un_modele_de_scoring/requirements.txt  # Install dependencies
+
+      # Step 5: Deploy the application to Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Set AWS Access Key from GitHub secrets
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Set AWS Secret Access Key from GitHub secrets
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-            cd Implementez_un_modele_de_scoring  # Change directory to where the project files are located
-            zip -r deploy-package.zip .  # Compress the project directory into a zip file
-            eb init -p python-3.11 Scoring_client --region eu-north-1  # Initialize EB with Python 3.11 in the 'eu-north-1' region
-            eb use Scoringclient-env  # Set the default environment to deploy
-            eb deploy  # Deploy the application to Elastic Beanstalk
-      # Step 5: Perform a health check after deployment to verify that the service is running
+          cd Implementez_un_modele_de_scoring
+          zip -r deploy-package.zip .  # Compress the project directory
+          eb init -p python-3.11 Scoring_client --region eu-north-1
+          eb use Scoringclient-env
+          eb deploy
+
+      # Step 6: Perform a health check after deployment
       - name: Health check
         run: |
-          curl --fail http://scoring-client.eu-north-1.elasticbeanstalk.com/streamlit || exit 1  # Send an HTTP request to the deployed app and fail if the app is not reachable
+          curl --fail http://scoring-client.eu-north-1.elasticbeanstalk.com/streamlit || exit 1
