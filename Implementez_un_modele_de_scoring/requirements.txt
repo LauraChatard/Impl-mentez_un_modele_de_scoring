@@ -1,7 +1,7 @@
-Flask==2.3.3
-numpy==1.24.3
-scikit-learn==1.2.2
-streamlit==1.21.0
-requests==2.31.0
+flask
+numpy
+scikit-learn
+streamlit
+requests
 boto3
 lightgbm
