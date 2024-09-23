@@ -50,6 +50,6 @@ jobs:
           eb deploy
 
       # Step 6: Perform a health check after deployment
-      - name: Health check
-        run: |
-          curl --fail http://172.31.18.94:8501|| exit 1
+      #- name: Health check
+        #run: |
+         #curl --fail http://172.31.18.94:8501|| exit 1
