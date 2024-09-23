@@ -3,7 +3,7 @@ import requests
 
 # Function to get prediction from API
 def get_prediction(sk_id_curr):
-    url = "https://scoring-client.eu-north-1.elasticbeanstalk.com/predict"
+    url = "https://elasticbeanstalk-eu-north-1-182399693743.s3.eu-north-1.amazonaws.com/"
     headers = {'Content-Type': 'application/json'}
     data = {'SK_ID_CURR': sk_id_curr}
 
@@ -24,7 +24,7 @@ client_id = st.text_input("Enter Client ID")
 if st.button("Get Prediction"):
     if client_id:
         prediction = get_prediction(client_id)
-        # Displaying the prediction with client ID in bold using Markdown
-        st.markdown(f"Prêt pour le client **{client_id}** : {prediction.split(': ')[1]}")
+        # Display the prediction with client ID in bold using Markdown
+        st.markdown(prediction)  # Directly display the plain text response
     else:
         st.write("Please enter a Client ID.")
