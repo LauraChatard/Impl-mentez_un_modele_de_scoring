@@ -52,4 +52,4 @@ jobs:
       # Step 6: Perform a health check after deployment
       - name: Health check
         run: |
-          curl --fail http://scoring-client.eu-north-1.elasticbeanstalk.com/streamlit || exit 1
+          curl --fail http://172.31.18.94:5000/streamlit || exit 1
