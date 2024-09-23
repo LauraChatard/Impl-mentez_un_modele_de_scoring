@@ -7,7 +7,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
 import gc
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 s3 = boto3.client('s3')
 bucket_name = 'elasticbeanstalk-eu-north-1-182399693743'
@@ -23,7 +23,7 @@ model = load_pickle_from_s3('model.pkl')
 imputer = load_pickle_from_s3('imputer.pkl')
 scaler = load_pickle_from_s3('scaler.pkl')
 
-@app.route("/predict", methods=["POST"])
+@application.route("/predict", methods=["POST"])
 def predict():
     try:
         request_data = request.get_json()
