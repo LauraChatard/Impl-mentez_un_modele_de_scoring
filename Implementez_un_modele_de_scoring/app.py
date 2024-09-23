@@ -2,25 +2,43 @@ from flask import Flask, request, jsonify
 import numpy as np
 import json
 import pickle
+import boto3
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
 
 app = Flask(__name__)
 
+# Initialize a session using your AWS credentials
+s3 = boto3.client('s3')
+
+# Specify the S3 bucket name
+bucket_name = 'elasticbeanstalk-eu-north-1-182399693743'
+
+# Function to download and load a pickle file
+def load_pickle_from_s3(file_name):
+    # Download the file to a local path
+    local_path = file_name.split('/')[-1]  # Get the local file name from the S3 path
+    s3.download_file(bucket_name, file_name, local_path)
+
+    # Load the model
+    with open(local_path, 'rb') as file:
+        return pickle.load(file)
+
 # Load the model
-with open('https://elasticbeanstalk-eu-north-1-182399693743.s3.eu-north-1.amazonaws.com/model.pkl', 'rb') as file:
-    model = pickle.load(file)
-    print("Model loaded successfully")
+model = load_pickle_from_s3('model.pkl')
+print("Model loaded successfully")
 
 # Load preprocessing objects
-with open('https://elasticbeanstalk-eu-north-1-182399693743.s3.eu-north-1.amazonaws.com/imputer.pkl', 'rb') as file:
-    imputer = pickle.load(file)
+imputer = load_pickle_from_s3('imputer.pkl')
+print("Imputer loaded successfully")
 
-with open('https://elasticbeanstalk-eu-north-1-182399693743.s3.eu-north-1.amazonaws.com/scaler.pkl', 'rb') as file:
-    scaler = pickle.load(file)
+scaler = load_pickle_from_s3('scaler.pkl')
+print("Scaler loaded successfully")
 
 # Load data from JSON file
-data_path = "https://elasticbeanstalk-eu-north-1-182399693743.s3.eu-north-1.amazonaws.com/json_data.json"
+data_path = 'json_data.json'  # Local path for the JSON file
+s3.download_file(bucket_name, data_path, data_path)
+
 with open(data_path, 'r') as f:
     data = json.load(f)
 
