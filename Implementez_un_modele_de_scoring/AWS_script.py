@@ -3,7 +3,7 @@ import requests
 
 # Function to get prediction from API
 def get_prediction(sk_id_curr):
-    url = "http://172.31.18.94:5000/predict"
+    url = "http://172.31.18.94:8501/predict"
     headers = {'Content-Type': 'application/json'}
     data = {'SK_ID_CURR': sk_id_curr}
 
