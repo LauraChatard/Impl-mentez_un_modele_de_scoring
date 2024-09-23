@@ -38,6 +38,7 @@ print("Scaler loaded successfully")
 # Load data from JSON file
 data_path = 'json_data.json'  # Local path for the JSON file
 s3.download_file(bucket_name, data_path, data_path)
+print("Data download successfully")
 
 with open(data_path, 'r') as f:
     data = json.load(f)
