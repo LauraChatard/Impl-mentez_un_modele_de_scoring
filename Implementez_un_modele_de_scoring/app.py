@@ -8,19 +8,19 @@ from sklearn.preprocessing import MinMaxScaler
 app = Flask(__name__)
 
 # Load the model
-with open('s3://elasticbeanstalk-eu-north-1-182399693743/model.pkl', 'rb') as file:
+with open('https://elasticbeanstalk-eu-north-1-182399693743.s3.eu-north-1.amazonaws.com/model.pkl', 'rb') as file:
     model = pickle.load(file)
     print("Model loaded successfully")
 
 # Load preprocessing objects
-with open('s3://elasticbeanstalk-eu-north-1-182399693743/imputer.pkl', 'rb') as file:
+with open('https://elasticbeanstalk-eu-north-1-182399693743.s3.eu-north-1.amazonaws.com/imputer.pkl', 'rb') as file:
     imputer = pickle.load(file)
 
-with open('s3://elasticbeanstalk-eu-north-1-182399693743/scaler.pkl', 'rb') as file:
+with open('https://elasticbeanstalk-eu-north-1-182399693743.s3.eu-north-1.amazonaws.com/scaler.pkl', 'rb') as file:
     scaler = pickle.load(file)
 
 # Load data from JSON file
-data_path = "s3://elasticbeanstalk-eu-north-1-182399693743/json_data.json"
+data_path = "https://elasticbeanstalk-eu-north-1-182399693743.s3.eu-north-1.amazonaws.com/json_data.json"
 with open(data_path, 'r') as f:
     data = json.load(f)
 
