@@ -1,6 +1,7 @@
 name: Deploy to AWS Elastic Beanstalk
 
 on:
+  workflow_dispatch:  # Allow manual triggering of the workflow
   push:
     branches:
       - main
@@ -44,7 +45,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           cd Implementez_un_modele_de_scoring
-          zip -r deploy-package.zip .  # Compress the project directory
+          zip -r deploy-package.zip . -x "P7env/*"  # Compress the project directory
           eb init -p python-3.11 Scoring_client --region eu-north-1
           eb use Scoringclient-env
           eb deploy
