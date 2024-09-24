@@ -29,8 +29,8 @@ def load_csv_from_s3(file_name):
     s3.download_file(bucket_name, file_name, local_path)
     return pd.read_csv(local_path)
 
-# Load the client data CSV (or adjust to load specific clients if dataset is large)
-client_data = load_csv_from_s3('data.csv')
+# Load the client data 
+client_data = load_csv_from_s3('json_data.json')
 
 # Function to retrieve client data based on ID
 def get_client_data(client_id):
