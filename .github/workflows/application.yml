@@ -33,8 +33,7 @@ jobs:
       # Step 4: Create a virtual environment and install dependencies
       - name: Create virtual environment and install dependencies
         run: |
-          python3 -m venv venv  # Create a virtual environment
-          source venv/bin/activate  # Activate the virtual environment
+          source myenv/bin/activate  # Activate the virtual environment
           pip install -r Implementez_un_modele_de_scoring/requirements.txt  # Install dependencies
 
       # Step 5: Deploy the application to Elastic Beanstalk
