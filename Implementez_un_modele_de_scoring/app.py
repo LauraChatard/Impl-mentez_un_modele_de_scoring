@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import numpy as np
-import json
+import pandas as pd  # Import pandas for CSV handling
 import pickle
 import boto3
 from sklearn.impute import SimpleImputer
@@ -12,7 +12,7 @@ app = Flask(__name__)
 s3 = boto3.client('s3')
 bucket_name = 'elasticbeanstalk-eu-north-1-182399693743'
 
-# Load the model and preprocessing objects
+# Load the model and preprocessing objects from S3
 def load_pickle_from_s3(file_name):
     local_path = file_name.split('/')[-1]
     s3.download_file(bucket_name, file_name, local_path)
@@ -22,6 +22,22 @@ def load_pickle_from_s3(file_name):
 model = load_pickle_from_s3('model.pkl')
 imputer = load_pickle_from_s3('imputer.pkl')
 scaler = load_pickle_from_s3('scaler.pkl')
+
+# Load client data CSV from S3
+def load_csv_from_s3(file_name):
+    local_path = file_name.split('/')[-1]
+    s3.download_file(bucket_name, file_name, local_path)
+    return pd.read_csv(local_path)
+
+# Load the client data CSV (or adjust to load specific clients if dataset is large)
+client_data = load_csv_from_s3('data.csv')
+
+# Function to retrieve client data based on ID
+def get_client_data(client_id):
+    client_row = client_data[client_data['SK_ID_CURR'] == client_id]
+    if not client_row.empty:
+        return client_row.iloc[0].to_dict()  # Convert row to dictionary
+    return None
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -53,7 +69,7 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     finally:
-        gc.collect()  
+        gc.collect()  # Explicitly call garbage collection
 
 def classify_decision(predictions_proba):
     threshold_low = 0.4
