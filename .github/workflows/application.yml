@@ -31,9 +31,10 @@ jobs:
           pip install awsebcli
 
       # Step 4: Create a virtual environment and install dependencies
-      - name: Activate virtual environment and install dependencies
+      - name: Create virtual environment and install dependencies
         run: |
-          source Implementez_un_modele_de_scoring/Implementez_un_modele_de_scoring/myenv/bin/activate  # Activate the virtual environment
+          python3 -m venv P7env
+          source p7env/bin/activate  # Activate the virtual environment
           pip install --no-cache-dir -r Implementez_un_modele_de_scoring/requirements.txt  # Install dependencies
 
       # Step 5: Deploy the application to Elastic Beanstalk
