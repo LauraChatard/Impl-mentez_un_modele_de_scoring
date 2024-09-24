@@ -33,9 +33,9 @@ jobs:
       # Step 4: Create a virtual environment and install dependencies
       - name: Create virtual environment and install dependencies
         run: |
-          python3 -m venv P7env
-          source p7env/bin/activate  # Activate the virtual environment
-          pip install --no-cache-dir -r Implementez_un_modele_de_scoring/requirements.txt  # Install dependencies
+          python3 -m venv Implementez_un_modele_de_scoring/P7env  # Create a virtual environment in the specified folder
+          source Implementez_un_modele_de_scoring/P7env/bin/activate  # Activate the virtual environment
+          pip install -r Implementez_un_modele_de_scoring/requirements.txt  # Install dependencies
 
       # Step 5: Deploy the application to Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
