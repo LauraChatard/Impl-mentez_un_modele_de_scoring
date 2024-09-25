@@ -1,5 +1,18 @@
 import streamlit as st
 import requests
+import logging
+
+# Set up logging
+logging.basicConfig(
+    filename='app.log',  
+    level=logging.DEBUG,  
+    format='%(asctime)s %(levelname)s:%(message)s'
+)
+
+app = Flask(__name__)
+
+# Example log message
+logging.info("Flask application has started.")
 
 # Function to get prediction from API
 def get_prediction(sk_id_curr):
