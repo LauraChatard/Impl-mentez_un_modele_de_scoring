@@ -1,2 +1,2 @@
-web: gunicorn -b 0.0.0.0:5000 app:app  # Flask API running on port 5000
+web: gunicorn -b 0.0.0.0:5000 app:app --access-logfile gunicorn_access.log --error-logfile gunicorn_error.log
 streamlit: streamlit run AWS_script.py --server.port 8501 --server.enableCORS false  # Streamlit app running on port 8501
