@@ -39,7 +39,7 @@ def load_json_from_s3(file_name):
     local_path = file_name.split('/')[-1]
     try:
         s3.download_file(bucket_name, file_name, local_path)
-        return pd.read_json(local_path)  # Use read_json for JSON files
+        return pd.read_json(local_path)
     except Exception as e:
         logging.error(f"Failed to load JSON file from S3: {e}")
         raise  # Re-raise the exception after logging
@@ -49,7 +49,12 @@ client_data = load_json_from_s3('json_data.json')  # Load JSON data
 
 # Function to retrieve client data based on ID
 def get_client_data(client_id):
-    client_row = client_data[client_data['SK_ID_CURR'] == client_id]
+    logging.debug(f"Searching for client ID: {client_id}")  # Log the search ID
+    
+    # Ensure client_id is of the same type as SK_ID_CURR (int)
+    client_row = client_data[client_data['SK_ID_CURR'] == int(client_id)]
+    logging.debug(f"Client row found: {client_row}")  # Log the found row(s)
+    
     if not client_row.empty:
         return client_row.iloc[0].to_dict()  # Convert row to dictionary
     return None
