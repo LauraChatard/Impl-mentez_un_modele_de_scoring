@@ -84,8 +84,8 @@ def predict():
         # Decision logic
         decision = classify_decision(predictions_proba)
 
-        # Return a JSON response
-        return jsonify({"client_id": client_id, "decision": decision})
+        # Return plain text message
+        return f"Decision for client {client_id}: {decision}"
     
     except Exception as e:
         logging.error(f"Error during prediction: {e}")
