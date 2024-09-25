@@ -6,8 +6,19 @@ import boto3
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
 import gc
+import logging
+
+# Set up logging
+logging.basicConfig(
+    filename='app.log',  
+    level=logging.DEBUG,  
+    format='%(asctime)s %(levelname)s:%(message)s'
+)
 
 app = Flask(__name__)
+
+# Example log message
+logging.info("Flask application has started.")
 
 s3 = boto3.client('s3')
 bucket_name = 'elasticbeanstalk-eu-north-1-182399693743'
