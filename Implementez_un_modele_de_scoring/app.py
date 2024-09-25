@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import numpy as np
-import pandas as pd  # Import pandas for CSV handling
+import pandas as pd  # Import pandas for JSON handling
 import pickle
 import boto3
 from sklearn.impute import SimpleImputer
@@ -34,14 +34,18 @@ model = load_pickle_from_s3('model.pkl')
 imputer = load_pickle_from_s3('imputer.pkl')
 scaler = load_pickle_from_s3('scaler.pkl')
 
-# Load client data CSV from S3
-def load_csv_from_s3(file_name):
+# Load client data JSON from S3
+def load_json_from_s3(file_name):
     local_path = file_name.split('/')[-1]
-    s3.download_file(bucket_name, file_name, local_path)
-    return pd.read_csv(local_path)
+    try:
+        s3.download_file(bucket_name, file_name, local_path)
+        return pd.read_json(local_path)  # Use read_json for JSON files
+    except Exception as e:
+        logging.error(f"Failed to load JSON file from S3: {e}")
+        raise  # Re-raise the exception after logging
 
 # Load the client data 
-client_data = load_csv_from_s3('json_data.json')
+client_data = load_json_from_s3('json_data.json')  # Load JSON data
 
 # Function to retrieve client data based on ID
 def get_client_data(client_id):
@@ -75,9 +79,11 @@ def predict():
         # Decision logic
         decision = classify_decision(predictions_proba)
 
-        return f"Decision for client {client_id}: {decision}"
+        # Return a JSON response
+        return jsonify({"client_id": client_id, "decision": decision})
     
     except Exception as e:
+        logging.error(f"Error during prediction: {e}")
         return jsonify({"error": str(e)}), 400
     finally:
         gc.collect()  # Explicitly call garbage collection
