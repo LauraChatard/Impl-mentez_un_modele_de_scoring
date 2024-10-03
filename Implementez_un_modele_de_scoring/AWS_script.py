@@ -10,7 +10,7 @@ def get_prediction(sk_id_curr):
     response = requests.post(url, json=data, headers=headers)
 
     if response.status_code == 200:
-        return response.text  # Returning plain text response
+        return response.json()
     else:
         return f"Error: {response.status_code}, {response.text}"
 
