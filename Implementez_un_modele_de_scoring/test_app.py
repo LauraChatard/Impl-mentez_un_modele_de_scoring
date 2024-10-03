@@ -1,7 +1,7 @@
 import unittest
 from app import app  # Import your Flask application
 
-class FlaskAppTests(unittest.TestCase):
+class TestFlaskApp(unittest.TestCase)::
 
     @classmethod
     def setUpClass(cls):
