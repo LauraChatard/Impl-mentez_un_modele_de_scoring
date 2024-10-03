@@ -42,7 +42,7 @@ jobs:
       - name: Run unit tests
         run: |
           source Implementez_un_modele_de_scoring/P7env/bin/activate  # Activate the virtual environment
-          run: python3 -m unittest discover -s Implementez_un_modele_de_scoring -p 'test_*.py'
+          python3 -m unittest discover -s Implementez_un_modele_de_scoring -p 'test_*.py'
 
       # Step 6: Deploy the application to Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
