@@ -2,9 +2,8 @@ This project aims to create a scoring model to classify loan applications for th
 
 In this directory:
 
-- (Notebook) EDA and feature engineering
-- Notebook) Testing multiple models
-- (Notebook) Model optimization
+- README
+- python_env 
 
 Folder: .github/workflows
 
