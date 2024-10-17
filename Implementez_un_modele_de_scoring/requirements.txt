@@ -8,3 +8,4 @@ boto3
 lightgbm
 matplotlib
 plotly
+shap
