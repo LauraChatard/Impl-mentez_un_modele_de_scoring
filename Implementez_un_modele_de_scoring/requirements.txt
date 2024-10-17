@@ -6,3 +6,5 @@ streamlit
 requests
 boto3
 lightgbm
+matplotlib
+plotly
