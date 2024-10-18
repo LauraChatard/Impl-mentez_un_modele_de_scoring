@@ -13,7 +13,7 @@ from io import BytesIO
 # Set up logging
 logging.basicConfig(
     filename='app.log',
-    level=logging.INFO, 
+    level=logging.DEBUG, 
     format='%(asctime)s %(levelname)s:%(message)s'
 )
 
