@@ -10,12 +10,21 @@ import logging
 import shap
 from io import BytesIO 
 
-# Set up logging
-logging.basicConfig(
-    filename='app.log',
-    level=logging.DEBUG, 
-    format='%(asctime)s %(levelname)s:%(message)s'
-)
+import logging
+
+# Configure logging to file
+logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(message)s')
+
+# Add a stream handler to log to the console as well
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+console_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s:%(message)s'))
+
+# Add the handler to the logger
+logging.getLogger().addHandler(console_handler)
+
+# Ensure real-time logging by forcing the file handler to flush immediately
+logging.getLogger().handlers[0].flush = True
 
 app = Flask(__name__)
 
