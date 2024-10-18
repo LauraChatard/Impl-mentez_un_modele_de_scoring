@@ -56,7 +56,7 @@ def load_json_from_s3(file_name):
         raise  # Re-raise the exception after logging
 
 # Load the client data 
-client_data = load_json_from_s3('data_dashboard.json')  # Load JSON data
+client_data = load_json_from_s3('data_dashboard.json')  # Chargez le bon fichier depuis S3
 
 def load_client_info(s3_uri, client_id):
     try:
