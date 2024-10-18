@@ -13,7 +13,7 @@ from io import BytesIO
 import logging
 
 # Configure logging to file
-logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(message)s')
+logging.basicConfig(filename='app.log', level=logging.ERROR, format='%(asctime)s %(levelname)s:%(message)s')
 
 # Add a stream handler to log to the console as well
 console_handler = logging.StreamHandler()
