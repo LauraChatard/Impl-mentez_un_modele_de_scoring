@@ -64,7 +64,7 @@ if st.button("Get Prediction"):
         if st.session_state.prediction_data is None:
             st.error("No response from the API.")
         elif "error" in st.session_state.prediction_data:
-            st.error(st.session_state.prediction_data["error"])
+            st.error(f"Unexpected response format: {st.session_state.prediction_data}")
         else:
             decision = st.session_state.prediction_data['decision']
             prediction_prob = st.session_state.prediction_data['probability']  # Get the probability from the API response
