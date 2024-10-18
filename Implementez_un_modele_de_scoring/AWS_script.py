@@ -61,15 +61,21 @@ if 'show_feature_importance' not in st.session_state:
 if st.button("Get Prediction"):
     if client_id:
         st.session_state.prediction_data = get_prediction(client_id)
-        if st.session_state.prediction_data is None:
-            st.error("No response from the API.")
-        elif "error" in st.session_state.prediction_data:
-            st.error(f"Unexpected response format: {st.session_state.prediction_data}")
+
+        # Ajout d'un contrôle pour vérifier si la réponse est bien un dictionnaire
+        if isinstance(st.session_state.prediction_data, dict):
+            if st.session_state.prediction_data is None:
+                st.error("No response from the API.")
+            elif "error" in st.session_state.prediction_data:
+                st.error(st.session_state.prediction_data["error"])
+            else:
+                decision = st.session_state.prediction_data['decision']
+                prediction_prob = st.session_state.prediction_data['probability']  # Get the probability from the API response
+                st.markdown(f"<h2 style='font-size: 30px;'>Decision: {decision}</h2>", unsafe_allow_html=True)
+                st.session_state.show_graph = True
         else:
-            decision = st.session_state.prediction_data['decision']
-            prediction_prob = st.session_state.prediction_data['probability']  # Get the probability from the API response
-            st.markdown(f"<h2 style='font-size: 30px;'>Decision: {decision}</h2>", unsafe_allow_html=True)
-            st.session_state.show_graph = True
+            # Affiche la réponse brute pour comprendre le problème
+            st.error(f"Unexpected response format: {st.session_state.prediction_data}")
 
             # Define the colors and ranges for the segmented bar
             red_end = 0.35
