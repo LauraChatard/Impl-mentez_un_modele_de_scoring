@@ -10,17 +10,6 @@ import logging
 import shap
 from io import BytesIO
 
-# Example binary data (could be content from an S3 object)
-binary_data = b"SK_ID_CURR,AMT_INCOME_TOTAL,AMT_CREDIT\n100001,202500.0,406597.5\n100002,270000.0,1293502.5"
-
-# Wrap the binary data in a BytesIO object
-file_like_object = BytesIO(binary_data)
-
-# Now you can read it with pandas like a regular file
-df = pd.read_csv(file_like_object)
-
-print(df)
-
 # Set up logging
 logging.basicConfig(
     filename='app.log',
@@ -30,7 +19,7 @@ logging.basicConfig(
 
 app = Flask(__name__)
 
-# Example log message
+# log message
 logging.info("Flask application has started.")
 
 s3 = boto3.client('s3')
@@ -58,7 +47,7 @@ def load_json_from_s3(file_name):
         raise  # Re-raise the exception after logging
 
 # Load the client data 
-client_data = load_json_from_s3('json_data.json')  # Load JSON data
+client_data = load_json_from_s3('data_dashboard.json')  # Load JSON data
 
 def load_client_info(s3_uri, client_id):
     try:
