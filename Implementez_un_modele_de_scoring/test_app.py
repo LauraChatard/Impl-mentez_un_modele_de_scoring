@@ -10,7 +10,7 @@ class TestFlaskApp(unittest.TestCase):
 
     def test_predict_valid_client(self):
         # Test with a valid client ID
-        response = self.app.post('/predict', json={'SK_ID_CURR': 214368})  
+        response = self.app.post('/predict', json={'SK_ID_CURR': 102552})  
         self.assertEqual(response.status_code, 200)
         self.assertIn('decision', response.get_json())  # Check that the 'decision' key is in the response
 
