@@ -110,24 +110,23 @@ def classify_decision(predictions_proba):
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
-        # Récupérer les données de la requête
         request_data = request.get_json()
+        logging.info(f"Request data: {request_data}")
         client_id = request_data.get('SK_ID_CURR')
 
-        # Si aucun client_id n'est fourni, retourner une erreur 400
         if not client_id:
+            logging.error("Client ID is missing from the request.")
             return jsonify({"error": "Client ID is required to perform the prediction"}), 400
 
-        # Récupérer les données du client
-        try:
-            client_row_predict = get_client_data(client_id)
-        except ValueError as e:
-            # Si une exception est levée dans get_client_data, on retourne un code d'erreur 404
-            return jsonify({"error": str(e)}), 404
+        client_row_predict = get_client_data(client_id)
+        logging.info(f"Client data for {client_id}: {client_row_predict}")
 
-        # Si aucun client n'est trouvé, retourner une erreur 404
         if client_row_predict is None:
+            logging.error(f"Client ID {client_id} not found.")
             return jsonify({"error": "Client ID not found"}), 404
+
+        # Continue with prediction process...
+        logging.info(f"Prediction process started for client {client_id}")
 
         # Prepare features for prediction
         client_features = np.array([value for key, value in client_row_predict.items() if key not in ['TARGET', 'SK_ID_CURR']]).reshape(1, -1)
