@@ -111,18 +111,22 @@ def classify_decision(predictions_proba):
 def predict():
     try:
         request_data = request.get_json()
-        logging.info(f"Request data: {request_data}")
+        # Vérifier si les données JSON sont valides
+        if request_data is None:
+            return jsonify({"error": "Invalid JSON format"}), 400
+        
         client_id = request_data.get('SK_ID_CURR')
-
-        if not client_id:
-            logging.error("Client ID is missing from the request.")
+        
+        # Vérifier si l'ID client est présent et au bon format
+        if client_id is None:
             return jsonify({"error": "Client ID is required to perform the prediction"}), 400
 
-        client_row_predict = get_client_data(client_id)
-        logging.info(f"Client data for {client_id}: {client_row_predict}")
+        if not isinstance(client_id, int):  # Vérifiez si client_id est un entier
+            return jsonify({"error": "Client ID must be an integer"}), 400
 
+        client_row_predict = get_client_data(client_id)
+        
         if client_row_predict is None:
-            logging.error(f"Client ID {client_id} not found.")
             return jsonify({"error": "Client ID not found"}), 404
 
         # Continue with prediction process...
