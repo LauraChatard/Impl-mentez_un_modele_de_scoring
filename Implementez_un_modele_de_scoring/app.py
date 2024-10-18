@@ -205,7 +205,7 @@ def predict():
             "accepted_mean_shap_importances": accepted_mean_shap_importance_dict,  # Add mean SHAP importances to the response
             "rejected_mean_shap_importances": rejected_mean_shap_importance_dict
         }
-
+        app.logger.info(f"Response data: {response_data}")  # Log de la réponse
         return jsonify(response_data)
 
 
