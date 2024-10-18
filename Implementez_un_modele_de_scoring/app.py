@@ -8,11 +8,23 @@ from sklearn.preprocessing import MinMaxScaler
 import gc
 import logging
 import shap
+from io import BytesIO
+
+# Example binary data (could be content from an S3 object)
+binary_data = b"SK_ID_CURR,AMT_INCOME_TOTAL,AMT_CREDIT\n100001,202500.0,406597.5\n100002,270000.0,1293502.5"
+
+# Wrap the binary data in a BytesIO object
+file_like_object = BytesIO(binary_data)
+
+# Now you can read it with pandas like a regular file
+df = pd.read_csv(file_like_object)
+
+print(df)
 
 # Set up logging
 logging.basicConfig(
-    filename='app.log',  
-    level=logging.DEBUG,  
+    filename='app.log',
+    level=logging.INFO, 
     format='%(asctime)s %(levelname)s:%(message)s'
 )
 
@@ -48,24 +60,34 @@ def load_json_from_s3(file_name):
 # Load the client data 
 client_data = load_json_from_s3('json_data.json')  # Load JSON data
 
-
-def load_client_info(file_path, client_id):
+def load_client_info(s3_uri, client_id):
     try:
+        # Parse the bucket name and key from the S3 URI
+        bucket_name, key = s3_uri.replace("s3://", "").split('/', 1)
+
+        # Download the file into memory
+        response = s3.get_object(Bucket=bucket_name, Key=key)
+        file_content = response['Body'].read()
+
+        # Read the file as a pandas DataFrame from memory
         columns_of_interest = ['SK_ID_CURR', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'DAYS_BIRTH', 'NAME_INCOME_TYPE', 'CODE_GENDER', 'NAME_CONTRACT_TYPE', 'CNT_CHILDREN']
-        # Read only the necessary columns
-        data = pd.read_csv(file_path, usecols=columns_of_interest)
+        data = pd.read_csv(BytesIO(file_content), usecols=columns_of_interest)
 
         # Filter for the specific client ID
         client_row = data[data['SK_ID_CURR'] == client_id]
         if client_row.empty:
             logging.warning(f"Client ID {client_id} not found.")
             return None
-        
+
         logging.info(f"Loaded client info for ID {client_id}")
         return client_row
+    
     except Exception as e:
         logging.error(f"Failed to load client info: {e}")
         raise
+
+# S3 URI instead of local path
+client_info_path = "s3://elasticbeanstalk-eu-north-1-182399693743/application_train.csv"
 
 @app.route("/")
 def home():
@@ -100,7 +122,7 @@ def predict():
         client_id = request_data.get('SK_ID_CURR')
 
         if not client_id:
-            return jsonify({"error": "Client ID is required"}), 400
+            return jsonify({"error": "Client ID is required to perform the prediction"}), 400
 
         client_row_predict = get_client_data(client_id)
         if client_row_predict is None:
