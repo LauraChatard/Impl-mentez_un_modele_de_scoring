@@ -8,7 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 import gc
 import logging
 import shap
-from io import BytesIO
+from io import BytesIO 
 
 # Set up logging
 logging.basicConfig(
@@ -90,9 +90,14 @@ def get_client_data(client_id):
     client_row = client_data[client_data['SK_ID_CURR'] == int(client_id)]
     logging.debug(f"Client row found: {client_row}")  # Log the found row(s)
     
+    # Log the length of the found row(s)
     if not client_row.empty:
+        logging.debug(f"Client row found, length: {len(client_row)}")
         return client_row.iloc[0].to_dict()  # Convert row to dictionary
-    return None
+    else:
+        logging.error(f"No data found for client ID: {client_id}")
+        raise ValueError(f"No data found for client ID: {client_id}")  # Raise an error if empty
+
 
 def classify_decision(predictions_proba):
     threshold_low = 0.35
