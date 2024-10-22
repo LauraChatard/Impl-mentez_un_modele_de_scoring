@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd  # Import pandas for JSON handling
 import pickle
 import boto3
+import json
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
 import gc
@@ -49,19 +50,6 @@ def load_json_from_s3(file_name):
 # Load the client data 
 client_data = load_json_from_s3('json_data.json')  # Load JSON data
 
-# Function to load JSON data locally
-def load_json_locally(file_path):
-    try:
-        with open(file_path, 'r') as f:
-            data = json.load(f)
-            df = pd.DataFrame(data)
-        logging.info(f"Loaded data: {len(df)} records")
-        logging.info(f"DataFrame columns: {df.columns.tolist()}")
-        return df
-    except Exception as e:
-        logging.error(f"Failed to load JSON file locally: {e}")
-        raise
-
 def load_client_info(file_path, client_id):
     try:
         columns_of_interest = ['SK_ID_CURR', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'DAYS_BIRTH', 'NAME_INCOME_TYPE', 'CODE_GENDER', 'NAME_CONTRACT_TYPE', 'CNT_CHILDREN']
@@ -80,12 +68,14 @@ def load_client_info(file_path, client_id):
         logging.error(f"Failed to load client info: {e}")
         raise
 
-client_info_path = "/Users/laurachatard/Documents/Vie Etudiante/Openclassrooms/projet_7/projet_7_datasets/application_train.csv"
+file_name = 'application_train.csv'  # Nom du fichier dans le bucket S3
 
-# Load the client data
-data_path = "/Users/laurachatard/Documents/Vie Etudiante/Openclassrooms/projet_8/data_dashboard.json"
-client_data = load_json_locally(data_path)
-logging.info(f"Shape of client data: {client_data.shape}")
+def load_data_from_s3(bucket, file_key):
+    # Télécharger le fichier depuis S3 et le lire dans un DataFrame pandas
+    csv_obj = s3.get_object(Bucket=bucket, Key=file_key)
+    body = csv_obj['Body']
+    df = pd.read_csv(body)
+    return df
 
 
 @app.route("/")
@@ -224,8 +214,8 @@ def predict():
 
 @app.route("/client_info/<int:client_id>", methods=["GET"])
 def client_info(client_id):
-    # Charger les données clients depuis le fichier CSV
-    client_data = pd.read_csv(client_info_path)
+    # Charger les données clients depuis S3
+    client_data = load_data_from_s3(bucket_name, file_name)
 
     # Filtrer pour obtenir uniquement les 100 premiers clients
     client_data = client_data.head(500)
@@ -234,8 +224,8 @@ def client_info(client_id):
     mean_income_target_0 = client_data[client_data['TARGET'] == 0]['AMT_INCOME_TOTAL'].mean()
     mean_income_target_1 = client_data[client_data['TARGET'] == 1]['AMT_INCOME_TOTAL'].mean()
 
-    # Charger les informations du client spécifié
-    client_row = load_client_info(client_info_path, client_id)
+    # Filtrer les données pour le client spécifié
+    client_row = client_data[client_data['client_id'] == client_id]
 
     if client_row is not None:
         age = -(client_row.iloc[0]['DAYS_BIRTH'] / 365)  # Calculer l'âge
