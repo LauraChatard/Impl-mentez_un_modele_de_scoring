@@ -48,7 +48,7 @@ def load_json_from_s3(file_name):
         raise  # Re-raise the exception after logging
 
 # Load the client data 
-client_data = load_json_from_s3('json_data.json')  # Load JSON data
+client_data = load_json_from_s3('reduced_data_dashboard.json')  # Load JSON data
 
 def load_client_info(file_path, client_id):
     try:
@@ -68,7 +68,7 @@ def load_client_info(file_path, client_id):
         logging.error(f"Failed to load client info: {e}")
         raise
 
-file_name = 'application_train.csv'  # Nom du fichier dans le bucket S3
+file_name = 'filtered_application_train.csv'  # Nom du fichier dans le bucket S3
 
 def load_data_from_s3(bucket, file_key):
     # Télécharger le fichier depuis S3 et le lire dans un DataFrame pandas
