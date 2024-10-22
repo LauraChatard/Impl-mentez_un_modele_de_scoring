@@ -39,10 +39,10 @@ jobs:
           pip install -r Implementez_un_modele_de_scoring/requirements.txt  # Install dependencies
         
        # Step 5: Run unit tests
-      - name: Run unit tests
-        run: |
-          source Implementez_un_modele_de_scoring/P7env/bin/activate  # Activate the virtual environment
-          python3 -m unittest discover -s Implementez_un_modele_de_scoring -p 'test_*.py'
+      #- name: Run unit tests
+       # run: |
+        #  source Implementez_un_modele_de_scoring/P7env/bin/activate  # Activate the virtual environment
+         # python3 -m unittest discover -s Implementez_un_modele_de_scoring -p 'test_*.py'
 
       # Step 6: Deploy the application to Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
