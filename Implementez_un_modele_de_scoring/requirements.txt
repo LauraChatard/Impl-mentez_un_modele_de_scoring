@@ -5,7 +5,7 @@ scikit-learn==1.2.2  # Vérifiez si vous avez besoin de cette version exacte
 streamlit==1.25.0  # Remplacez par la version exacte que vous utilisez
 requests==2.31.0
 boto3==1.28.50  # Vérifiez la version exacte sur votre environnement
-lightgbm==3.3.5  # Remplacez par la version exacte que vous utilisez
+lightgbm
 matplotlib==3.9.0
 plotly==5.16.1  # Remplacez par la version exacte que vous utilisez
 shap==0.42.1  # Remplacez par la version exacte
