@@ -9,4 +9,3 @@ lightgbm
 matplotlib==3.9.0
 plotly==5.16.1  # Remplacez par la version exacte que vous utilisez
 shap==0.42.1  # Remplacez par la version exacte
-

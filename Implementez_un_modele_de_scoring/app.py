@@ -132,10 +132,12 @@ def predict():
 
         # Inside the predict function after scaling the features
         explainer = shap.TreeExplainer(model)
+
+        # SHAP values will now return a list, and you need to extract the positive class
         shap_values = explainer.shap_values(client_features_scaled)
 
-        # For binary classification, use the first class's SHAP values
-        client_shap_values = shap_values[1][0]  # Get SHAP values for the positive class
+        # For binary classification, use the first class's SHAP values (for positive class)
+        client_shap_values = shap_values[1][0]  # Adjust this based on the output structure
 
         # Create a DataFrame for interpretation
         shap_importance_df = pd.DataFrame({

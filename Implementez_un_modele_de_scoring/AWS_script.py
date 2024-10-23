@@ -124,124 +124,129 @@ client_id = st.text_input("Enter Client ID")
 if st.button("Get Prediction"):
     if client_id:
         st.session_state.prediction_data = get_prediction(client_id)
+        st.write(st.session_state.prediction_data)
         if st.session_state.prediction_data is None:
             st.error("No response from the API.")
-        elif "error" in st.session_state.prediction_data:
-            st.error(st.session_state.prediction_data["error"])
+        if isinstance(st.session_state.prediction_data, dict):
+            if "error" in st.session_state.prediction_data:
+                st.error(st.session_state.prediction_data["error"])
+            else:
+                decision = st.session_state.prediction_data['decision']
+                prediction_prob = st.session_state.prediction_data['probability']
+                st.markdown(f"<h2 style='font-size: 30px;'>Decision: {decision}</h2>", unsafe_allow_html=True)
+                st.session_state.show_graph = True
+
+                # Define the colors and ranges for the segmented bar
+                red_end = 0.35
+                orange_start = red_end
+                orange_end = 0.45
+                blue_start = orange_end
+                blue_end = 1.0
+
+                # Create a Plotly figure
+                fig = go.Figure()
+
+                # Add a point for the client's probability
+                fig.add_trace(go.Scatter(
+                    x=[prediction_prob],
+                    y=['Loan Acceptance Probability'],
+                    mode='markers+text',
+                    marker=dict(color=ACCESSIBLE_COLORS['object'], size=TEXT_SIZES['comment'], symbol='octagon-dot'),
+                    text=[f"Client {client_id}"],
+                    textposition='top right',
+                    textfont=dict(size=TEXT_SIZES['text']),
+                    hoverinfo='text',
+                    hovertext=[f"Probability: {prediction_prob:.2f}", f"Client {client_id}"],
+                    hoverlabel=dict(font=dict(size=TEXT_SIZES['comment'])),
+                    name=f'Client {client_id}',
+                    customdata=[client_id],
+                ))
+
+            # Add bars for each segment (rejected, maybe, accepted)
+                fig.add_trace(go.Bar(
+                    y=['Loan Acceptance Probability'],
+                    x=[red_end],
+                    name='Rejected',
+                    orientation='h',
+                    marker=dict(color=ACCESSIBLE_COLORS['rejected']),
+                    hoverinfo='skip'  # Disable hover for bars
+                ))
+                fig.add_trace(go.Bar(
+                    y=['Loan Acceptance Probability'],
+                    x=[orange_end - orange_start],
+                    name='Maybe',
+                    orientation='h',
+                    marker=dict(color=ACCESSIBLE_COLORS['maybe']),
+                    base=orange_start,
+                    hoverinfo='skip'  # Disable hover for bars
+                ))
+                fig.add_trace(go.Bar(
+                    y=['Loan Acceptance Probability'],
+                    x=[blue_end - blue_start],
+                    name='Accepted',
+                    orientation='h',
+                    marker=dict(color=ACCESSIBLE_COLORS['accepted']),
+                    base=blue_start,
+                    hoverinfo='skip'  # Disable hover for bars
+                ))
+
+
+                # Set layout options
+                fig.update_layout(
+                    barmode='stack',
+                    xaxis=dict(
+                        range=[0, 1],
+                        tickvals=[0, red_end, orange_end, blue_end],  # Valeurs de début et de fin
+                        ticktext=['0', '0.35', '0.45', '1'],  # Texte des ticks
+                        title='Probability',
+                        showgrid=False
+                    ),
+                    yaxis=dict(
+                        range=[-0.5, 0.5],  # Ajuster pour que la ligne corresponde bien
+                        showticklabels=False
+                    ),
+                    title="Loan Acceptance Probability",
+                    showlegend=False,
+                    height=300,  # Adjust height for more space
+                    annotations=[
+                        # Annotation for "Rejected" above the first bar
+                        dict(
+                            x=red_end / 2,  # Position in the middle of the "Rejected" bar
+                            y=-0.5,  # Adjusted Y position above the bar
+                            xref='x',
+                            yref='y',
+                            text="Rejected",  # Text to display
+                            showarrow=False,
+                            font=dict(size=TEXT_SIZES['text'], color=ACCESSIBLE_COLORS['text'])  # Font color and size
+                        ),
+                        # Annotation for "Maybe" above the second bar
+                        dict(
+                            x=orange_start + (orange_end - orange_start) / 2,  # Position in the middle of the "Maybe" bar
+                            y=-0.5,  # Adjusted Y position above the bar
+                            xref='x',
+                            yref='y',
+                            text="Maybe",  # Text to display
+                            showarrow=False,
+                            font=dict(size=TEXT_SIZES['text'], color=ACCESSIBLE_COLORS['text'])  # Font color and size
+                        ),
+                        # Annotation for "Accepted" above the third bar
+                        dict(
+                            x=blue_start + (blue_end - blue_start) / 2,  # Position in the middle of the "Accepted" bar
+                            y=-0.5,  # Adjusted Y position above the bar
+                            xref='x',
+                            yref='y',
+                            text="Accepted",  # Text to display
+                            showarrow=False,
+                            font=dict(size=TEXT_SIZES['text'], color=ACCESSIBLE_COLORS['text'])  # Font color and size
+                        )
+                    ]
+                )
+
+                # Display the Plotly figure in Streamlit
+                st.plotly_chart(fig)
+
         else:
-            decision = st.session_state.prediction_data['decision']
-            prediction_prob = st.session_state.prediction_data['probability']  # Get the probability from the API response
-            st.markdown(f"<h2 style='font-size: 30px;'>Decision: {decision}</h2>", unsafe_allow_html=True)
-            st.session_state.show_graph = True
-
-            # Define the colors and ranges for the segmented bar
-            red_end = 0.35
-            orange_start = red_end
-            orange_end = 0.45
-            blue_start = orange_end
-            blue_end = 1.0
-
-            # Create a Plotly figure
-            fig = go.Figure()
-
-            # Add a point for the client's probability
-            fig.add_trace(go.Scatter(
-                x=[prediction_prob],
-                y=['Loan Acceptance Probability'],
-                mode='markers+text',
-                marker=dict(color=ACCESSIBLE_COLORS['object'], size=TEXT_SIZES['comment'], symbol='octagon-dot'),
-                text=[f"Client {client_id}"],
-                textposition='top right',
-                textfont=dict(size=TEXT_SIZES['text']),
-                hoverinfo='text',
-                hovertext=[f"Probability: {prediction_prob:.2f}", f"Client {client_id}"],
-                hoverlabel=dict(font=dict(size=TEXT_SIZES['comment'])),
-                name=f'Client {client_id}',
-                customdata=[client_id],
-            ))
-
-           # Add bars for each segment (rejected, maybe, accepted)
-            fig.add_trace(go.Bar(
-                y=['Loan Acceptance Probability'],
-                x=[red_end],
-                name='Rejected',
-                orientation='h',
-                marker=dict(color=ACCESSIBLE_COLORS['rejected']),
-                hoverinfo='skip'  # Disable hover for bars
-            ))
-            fig.add_trace(go.Bar(
-                y=['Loan Acceptance Probability'],
-                x=[orange_end - orange_start],
-                name='Maybe',
-                orientation='h',
-                marker=dict(color=ACCESSIBLE_COLORS['maybe']),
-                base=orange_start,
-                hoverinfo='skip'  # Disable hover for bars
-            ))
-            fig.add_trace(go.Bar(
-                y=['Loan Acceptance Probability'],
-                x=[blue_end - blue_start],
-                name='Accepted',
-                orientation='h',
-                marker=dict(color=ACCESSIBLE_COLORS['accepted']),
-                base=blue_start,
-                hoverinfo='skip'  # Disable hover for bars
-            ))
-
-
-            # Set layout options
-            fig.update_layout(
-                barmode='stack',
-                xaxis=dict(
-                    range=[0, 1],
-                    tickvals=[0, red_end, orange_end, blue_end],  # Valeurs de début et de fin
-                    ticktext=['0', '0.35', '0.45', '1'],  # Texte des ticks
-                    title='Probability',
-                    showgrid=False
-                ),
-                yaxis=dict(
-                    range=[-0.5, 0.5],  # Ajuster pour que la ligne corresponde bien
-                    showticklabels=False
-                ),
-                title="Loan Acceptance Probability",
-                showlegend=False,
-                height=300,  # Adjust height for more space
-                annotations=[
-                    # Annotation for "Rejected" above the first bar
-                    dict(
-                        x=red_end / 2,  # Position in the middle of the "Rejected" bar
-                        y=-0.5,  # Adjusted Y position above the bar
-                        xref='x',
-                        yref='y',
-                        text="Rejected",  # Text to display
-                        showarrow=False,
-                        font=dict(size=TEXT_SIZES['text'], color=ACCESSIBLE_COLORS['text'])  # Font color and size
-                    ),
-                    # Annotation for "Maybe" above the second bar
-                    dict(
-                        x=orange_start + (orange_end - orange_start) / 2,  # Position in the middle of the "Maybe" bar
-                        y=-0.5,  # Adjusted Y position above the bar
-                        xref='x',
-                        yref='y',
-                        text="Maybe",  # Text to display
-                        showarrow=False,
-                        font=dict(size=TEXT_SIZES['text'], color=ACCESSIBLE_COLORS['text'])  # Font color and size
-                    ),
-                    # Annotation for "Accepted" above the third bar
-                    dict(
-                        x=blue_start + (blue_end - blue_start) / 2,  # Position in the middle of the "Accepted" bar
-                        y=-0.5,  # Adjusted Y position above the bar
-                        xref='x',
-                        yref='y',
-                        text="Accepted",  # Text to display
-                        showarrow=False,
-                        font=dict(size=TEXT_SIZES['text'], color=ACCESSIBLE_COLORS['text'])  # Font color and size
-                    )
-                ]
-            )
-
-            # Display the Plotly figure in Streamlit
-            st.plotly_chart(fig)
+            st.error("Erreur de format dans la réponse de l'API.")
 
 # Client Info collapsible section in sidebar
 if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
