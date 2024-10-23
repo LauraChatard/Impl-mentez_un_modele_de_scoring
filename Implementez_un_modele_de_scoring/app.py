@@ -241,7 +241,7 @@ def client_info(client_id):
         return {"error": "Could not load client data"}, 500
 
     # Vérifier si les colonnes attendues existent
-    required_columns = ['TARGET', 'AMT_INCOME_TOTAL', 'client_id', 'DAYS_BIRTH', 'NAME_INCOME_TYPE', 'CODE_GENDER', 'NAME_CONTRACT_TYPE', 'CNT_CHILDREN']
+    required_columns = ['TARGET', 'AMT_INCOME_TOTAL', 'DAYS_BIRTH', 'NAME_INCOME_TYPE', 'CODE_GENDER', 'NAME_CONTRACT_TYPE', 'CNT_CHILDREN']
     missing_columns = [col for col in required_columns if col not in client_data.columns]
     
     if missing_columns:
