@@ -229,11 +229,15 @@ def predict():
 
 @app.route("/client_info/<int:client_id>", methods=["GET"])
 def client_info(client_id):
+    logging.info(f"Request received for client_id: {client_id}")
+    
     # Charger les données clients depuis S3
-    client_data = load_data_from_s3(bucket_name, file_name)
-
-    # Filtrer pour obtenir uniquement les 100 premiers clients
-    client_data = client_data.head(500)
+    try:
+        client_data = load_data_from_s3(bucket_name, file_name)
+        logging.info("Client data loaded successfully.")
+    except Exception as e:
+        logging.error(f"Error loading client data: {e}")
+        return {"error": "Could not load client data"}, 500
 
     # Calculer les moyennes pour target = 0 et target = 1
     mean_income_target_0 = client_data[client_data['TARGET'] == 0]['AMT_INCOME_TOTAL'].mean()
@@ -258,6 +262,7 @@ def client_info(client_id):
         return jsonify(result)
 
     return jsonify({"error": "Client ID not found"}), 404
+
 @app.route("/client_data", methods=["GET"])
 def client_data_route():
     try:
