@@ -124,7 +124,7 @@ client_id = st.text_input("Enter Client ID")
 if st.button("Get Prediction"):
     if client_id:
         st.session_state.prediction_data = get_prediction(client_id)
-        st.write(st.session_state.prediction_data)
+        #st.write(st.session_state.prediction_data)
         if st.session_state.prediction_data is None:
             st.error("No response from the API.")
         if isinstance(st.session_state.prediction_data, dict):
@@ -255,7 +255,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             if st.session_state.client_info is None:
                 st.session_state.client_info = get_client_info(client_id)
                 # Afficher les données brutes pour débogage
-                st.write("Raw Client Info Data:", st.session_state.client_info)
+                #st.write("Raw Client Info Data:", st.session_state.client_info)
 
             if "error" not in st.session_state.client_info:
                 # Créer un dictionnaire avec les informations du client
