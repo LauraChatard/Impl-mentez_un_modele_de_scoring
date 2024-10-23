@@ -1,0 +1,9 @@
+# Ignore everything
+*
+# Except for the .gitignore file
+!.gitignore
+
+# Except for specific files
+!app.py
+!AWS_script.py
+!requirements.txt
