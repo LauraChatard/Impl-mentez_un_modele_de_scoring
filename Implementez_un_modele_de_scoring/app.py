@@ -9,7 +9,7 @@ from sklearn.preprocessing import MinMaxScaler
 import gc
 import logging
 import shap
-from io import BytesIO
+from io import BytesIO, StringIO
 
 # Set up logging
 logging.basicConfig(
@@ -55,13 +55,18 @@ def load_json_from_s3(file_name):
 # Load the client data 
 client_data = load_json_from_s3('reduced_data_dashboard.json')  # Load JSON data
 
-def load_client_info(file_path, client_id):
+def load_client_info(bucket_name, file_name, client_id):
     try:
         columns_of_interest = ['SK_ID_CURR', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'DAYS_BIRTH', 'NAME_INCOME_TYPE', 'CODE_GENDER', 'NAME_CONTRACT_TYPE', 'CNT_CHILDREN']
-        # Read only the necessary columns
-        data = pd.read_csv(file_path, usecols=columns_of_interest)
+        
+        # Initialiser le client S3
+        s3_client = boto3.client('s3')
 
-        # Filter for the specific client ID
+        # Télécharger le fichier depuis S3
+        obj = s3_client.get_object(Bucket=bucket_name, Key=file_name)
+        data = pd.read_csv(StringIO(obj['Body'].read().decode('utf-8')), usecols=columns_of_interest)
+
+        # Filtrer pour le client ID spécifique
         client_row = data[data['SK_ID_CURR'] == client_id]
         if client_row.empty:
             logging.warning(f"Client ID {client_id} not found.")
@@ -253,7 +258,7 @@ def client_info(client_id):
     mean_income_target_1 = client_data[client_data['TARGET'] == 1]['AMT_INCOME_TOTAL'].mean()
 
     # Filtrer les données pour le client spécifié
-    client_row = client_data[client_data['client_id'] == client_id]
+    client_row = load_client_info(bucket_name='elasticbeanstalk-eu-north-1-182399693743', file_name='filtered_application_train.csv', client_id=client_id)
 
     if client_row is not None:
         age = -(client_row.iloc[0]['DAYS_BIRTH'] / 365)  # Calculer l'âge
