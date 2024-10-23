@@ -159,7 +159,7 @@ def predict():
         })
 
         # Now calculate the average SHAP values for accepted loans
-        accepted_clients = client_data.sample(n=500, random_state=42)  # Randomly select 100 clients
+        accepted_clients = client_data.sample(n=100, random_state=42)  # Randomly select 100 clients
         accepted_predictions_proba = model.predict_proba(scaler.transform(imputer.transform(accepted_clients[feature_names])))[:, 1]
         
         # Filter accepted clients
@@ -183,7 +183,7 @@ def predict():
             accepted_mean_shap_importance_dict = []
 
         # Calculate the average SHAP values for rejected loans
-        rejected_clients = client_data.sample(n=500, random_state=42)
+        rejected_clients = client_data.sample(n=100, random_state=42)
         rejected_predictions_proba = model.predict_proba(scaler.transform(imputer.transform(rejected_clients[feature_names])))[:, 1]
         
         # Filter accepted clients
