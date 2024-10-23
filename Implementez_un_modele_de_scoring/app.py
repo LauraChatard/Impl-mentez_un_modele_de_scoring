@@ -42,10 +42,15 @@ def load_json_from_s3(file_name):
     local_path = file_name.split('/')[-1]
     try:
         s3.download_file(bucket_name, file_name, local_path)
-        return pd.read_json(local_path)
+        df = pd.read_json(local_path)
+        if df.empty:
+            logging.warning(f"Loaded JSON file '{file_name}' is empty.")
+        else:
+            logging.info(f"Loaded JSON file '{file_name}' successfully with {df.shape[0]} records.")
+        return df
     except Exception as e:
         logging.error(f"Failed to load JSON file from S3: {e}")
-        raise  # Re-raise the exception after logging
+        raise
 
 # Load the client data 
 client_data = load_json_from_s3('reduced_data_dashboard.json')  # Load JSON data
@@ -71,11 +76,19 @@ def load_client_info(file_path, client_id):
 file_name = 'filtered_application_train.csv'  # Nom du fichier dans le bucket S3
 
 def load_data_from_s3(bucket, file_key):
-    # Télécharger le fichier depuis S3 et le lire dans un DataFrame pandas
-    csv_obj = s3.get_object(Bucket=bucket, Key=file_key)
-    body = csv_obj['Body']
-    df = pd.read_csv(body)
-    return df
+    # Download the file from S3 and read it into a pandas DataFrame
+    try:
+        csv_obj = s3.get_object(Bucket=bucket, Key=file_key)
+        body = csv_obj['Body']
+        df = pd.read_csv(body)
+        if df.empty:
+            logging.warning(f"Loaded CSV file '{file_key}' is empty.")
+        else:
+            logging.info(f"Loaded CSV file '{file_key}' successfully with {df.shape[0]} records.")
+        return df
+    except Exception as e:
+        logging.error(f"Failed to load CSV file from S3: {e}")
+        raise
 
 
 @app.route("/")
