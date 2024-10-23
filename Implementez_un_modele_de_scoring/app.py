@@ -230,14 +230,23 @@ def predict():
 @app.route("/client_info/<int:client_id>", methods=["GET"])
 def client_info(client_id):
     logging.info(f"Request received for client_id: {client_id}")
-    
+
     # Charger les données clients depuis S3
     try:
         client_data = load_data_from_s3(bucket_name, file_name)
         logging.info("Client data loaded successfully.")
+        logging.info(f"Data shape: {client_data.shape}, Columns: {client_data.columns.tolist()}")
     except Exception as e:
         logging.error(f"Error loading client data: {e}")
         return {"error": "Could not load client data"}, 500
+
+    # Vérifier si les colonnes attendues existent
+    required_columns = ['TARGET', 'AMT_INCOME_TOTAL', 'client_id', 'DAYS_BIRTH', 'NAME_INCOME_TYPE', 'CODE_GENDER', 'NAME_CONTRACT_TYPE', 'CNT_CHILDREN']
+    missing_columns = [col for col in required_columns if col not in client_data.columns]
+    
+    if missing_columns:
+        logging.error(f"Missing columns in client data: {missing_columns}")
+        return {"error": "Missing data columns"}, 500
 
     # Calculer les moyennes pour target = 0 et target = 1
     mean_income_target_0 = client_data[client_data['TARGET'] == 0]['AMT_INCOME_TOTAL'].mean()
