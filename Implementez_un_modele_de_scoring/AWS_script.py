@@ -350,7 +350,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             top_5_features = shap_df.loc[shap_df['SHAP Value'].abs().nlargest(5).index]
 
             # Load SHAP importances and store top features in session state for average accepted loans
-            response = requests.post("http://localhost:5004/predict", json={"SK_ID_CURR": client_id})
+            response = requests.post("http://13.51.100.2:5000/predict", json={"SK_ID_CURR": client_id})
             if response.status_code == 200:
                 data = response.json()
                 avg_shap_importance_df = pd.DataFrame(data['accepted_mean_shap_importances'])
