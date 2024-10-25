@@ -253,9 +253,16 @@ def client_info(client_id):
         logging.error(f"Missing columns in client data: {missing_columns}")
         return {"error": "Missing data columns"}, 500
 
-    # Calculer les moyennes pour target = 0 et target = 1
+    # Calculer les moyennes par cible (target) pour chaque colonne
     mean_income_target_0 = client_data[client_data['TARGET'] == 0]['AMT_INCOME_TOTAL'].mean()
     mean_income_target_1 = client_data[client_data['TARGET'] == 1]['AMT_INCOME_TOTAL'].mean()
+    mean_credit_target_0 = client_data[client_data['TARGET'] == 0]['AMT_CREDIT'].mean()
+    mean_credit_target_1 = client_data[client_data['TARGET'] == 1]['AMT_CREDIT'].mean()
+    mean_age_target_0 = -(client_data[client_data['TARGET'] == 0]['DAYS_BIRTH'].mean() / 365)
+    mean_age_target_1 = -(client_data[client_data['TARGET'] == 1]['DAYS_BIRTH'].mean() / 365)
+    mean_children_target_0 = client_data[client_data['TARGET'] == 0]['CNT_CHILDREN'].mean()
+    mean_children_target_1 = client_data[client_data['TARGET'] == 1]['CNT_CHILDREN'].mean()
+
 
     # Filtrer les données pour le client spécifié
     client_row = load_client_info(bucket_name='elasticbeanstalk-eu-north-1-182399693743', file_name='filtered_application_train.csv', client_id=client_id)
@@ -271,7 +278,13 @@ def client_info(client_id):
             "NAME_CONTRACT_TYPE": client_row.iloc[0]['NAME_CONTRACT_TYPE'],
             "CNT_CHILDREN": int(client_row.iloc[0]['CNT_CHILDREN']),
             "mean_income_target_0": float(mean_income_target_0),
-            "mean_income_target_1": float(mean_income_target_1)
+            "mean_income_target_1": float(mean_income_target_1),
+            "mean_credit_target_0": float(mean_credit_target_0),
+            "mean_credit_target_1": float(mean_credit_target_1),
+            "mean_age_target_0": float(mean_age_target_0),
+            "mean_age_target_1": float(mean_age_target_1),
+            "mean_children_target_0": float(mean_children_target_0),
+            "mean_children_target_1": float(mean_children_target_1)
         }
         return jsonify(result)
 

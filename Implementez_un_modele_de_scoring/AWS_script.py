@@ -291,54 +291,107 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 mean_income_target_0 = st.session_state.client_info['mean_income_target_0']
                 mean_income_target_1 = st.session_state.client_info['mean_income_target_1']
 
+                # Récupérer les moyennes des crédits pour les cibles 0 et 1
+                mean_credit_target_0 = st.session_state.client_info['mean_credit_target_0']
+                mean_credit_target_1 = st.session_state.client_info['mean_credit_target_1']
+
+                # Récupérer les moyennes des âges pour les cibles 0 et 1
+                mean_age_target_0 = st.session_state.client_info['mean_age_target_0']
+                mean_age_target_1 = st.session_state.client_info['mean_age_target_1']
+
+                # Récupérer les moyennes des enfants pour les cibles 0 et 1
+                mean_children_target_0 = st.session_state.client_info['mean_children_target_0']
+                mean_children_target_1 = st.session_state.client_info['mean_children_target_1']
+
+                # Revenu du client
                 client_income = st.session_state.client_info['AMT_INCOME_TOTAL']
+
+                # Crédits du client
+                client_credit = st.session_state.client_info['AMT_CREDIT']
+
+                # Âge du client
+                client_age = st.session_state.client_info['age']
+
+                # Type de revenu du client
+                client_income_type = st.session_state.client_info['NAME_INCOME_TYPE']
+
+                # Genre du client
+                client_gender = st.session_state.client_info['CODE_GENDER']
+
+                # Type de contrat du client
+                client_contract_type = st.session_state.client_info['NAME_CONTRACT_TYPE']
+
+                # Nombre d'enfants du client
+                client_children = st.session_state.client_info['CNT_CHILDREN']
 
                 # Préparer les données pour la visualisation
                 incomes = [mean_income_target_0, mean_income_target_1, client_income]
+                credits = [mean_credit_target_0, mean_credit_target_1, client_credit]
+                ages = [mean_age_target_0, mean_age_target_1, client_age]
+                children_counts = [mean_children_target_0, mean_children_target_1, client_children]
                 labels = ['Average Income Accepted', 'Average Income Rejected', 'Client Income']    
 
                 # Enregistrer les données dans st.session_state pour affichage ultérieur
-                st.session_state.income_comparison_data = (incomes, labels, client_income)
+                st.session_state.income_comparison_data = (incomes, credits, ages, children_counts, 
+                                                           labels, 
+                                                           client_income, client_credit, client_age, client_income_type, client_gender, client_contract_type, client_children)
             else:
                 st.sidebar.error(st.session_state.client_info["error"])
         else:
             st.write("Please enter a Client ID and click 'Get Prediction'.")
 
-    # Ajout d'un sélecteur dans la barre latérale pour choisir l'affichage
-    option = st.sidebar.selectbox("Choose a graphic", ["Select", "Compare Income", "Show Feature Importance"])
+    # Bouton pour afficher la comparaison des caractéristiques du client
+    if st.sidebar.button("Compare Client") and "income_comparison_data" in st.session_state:
+        # Récupérer les données de comparaison
+        incomes, credits, ages, children_counts, labels, client_income = st.session_state.income_comparison_data
 
-    # Afficher le graphique de comparaison des revenus si l'option est sélectionnée
-    if option == "Compare Income" and st.session_state.income_comparison_data:
-        incomes, labels, client_income = st.session_state.income_comparison_data
+        # Définir les paires de données pour l'affichage
+        data_pairs = [
+            ("Income Comparison", incomes, "Income (€)"),
+            ("Credit Comparison", credits, "Credit (€)"),
+            ("Age Comparison", ages, "Age (Years)"),
+            ("Children Comparison", children_counts, "Number of Children")
+        ]
 
-        # Déterminer la taille du graphique
-        graph_width = 800  # Largeur personnalisée pour le graphique
-        graph_height = 400  # Hauteur personnalisée pour le graphique
+        # Afficher les graphiques deux par deux
+        for i in range(0, len(data_pairs), 2):
+            col1, col2 = st.columns(2)
 
-        # Créer un graphique à barres pour la comparaison
-        fig, ax = plt.subplots(figsize=(graph_width / 100, graph_height / 100))  # Convertir en pouces
-        ax.bar(labels, incomes, color=[
-            ACCESSIBLE_COLORS['accepted'],  # Pour TARGET=0
-            ACCESSIBLE_COLORS['rejected'],   # Pour TARGET=1
-            ACCESSIBLE_COLORS['maybe']       # Pour le revenu du client
-        ])
-        ax.set_ylabel('Income (€)')
-        ax.set_title('Income Comparison')
-        ax.set_ylim(0, max(incomes) * 1.2)  # Ajuster l'axe y
-        ax.axhline(y=client_income, color='r', linestyle='--')  # Ligne pour le revenu du client
-        ax.text(2, client_income + 500, f'Client Income: {client_income:.2f} €', color='red', ha='center')
+            # Afficher le premier graphique de la paire
+            with col1:
+                title, data, ylabel = data_pairs[i]
+                fig, ax = plt.subplots(figsize=(4, 4))
+                ax.bar(labels, data, color=[
+                    ACCESSIBLE_COLORS['accepted'],
+                    ACCESSIBLE_COLORS['rejected'],
+                    ACCESSIBLE_COLORS['maybe']
+                ])
+                ax.set_ylabel(ylabel)
+                ax.set_title(title)
+                st.pyplot(fig)
 
-        # Afficher le graphique dans la partie principale
-        st.pyplot(fig)
-        plt.close(fig)  # Pour éviter de dupliquer le graphique dans le flux de sortie
+            # Afficher le second graphique de la paire s'il existe
+            if i + 1 < len(data_pairs):
+                with col2:
+                    title, data, ylabel = data_pairs[i + 1]
+                    fig, ax = plt.subplots(figsize=(4, 4))
+                    ax.bar(labels, data, color=[
+                        ACCESSIBLE_COLORS['accepted'],
+                        ACCESSIBLE_COLORS['rejected'],
+                        ACCESSIBLE_COLORS['maybe']
+                    ])
+                    ax.set_ylabel(ylabel)
+                    ax.set_title(title)
+                    st.pyplot(fig)
+                    plt.close(fig)  # Pour éviter de dupliquer le graphique dans le flux de sortie
 
     # Show Feature Importance button only if the prediction is valid
     if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
         st.session_state.show_feature_importance = True
 
 
-    # Only show feature importance graph if the button is clicked
-    if option == "Show Feature Importance" and st.session_state.prediction_data:
+    # Bouton pour afficher l'importance des features (Show Feature Importance)
+    if st.sidebar.button("Feature Importances"):
         st.markdown("### Top 5 Feature Importances")
 
         # Extract SHAP importances for the client
