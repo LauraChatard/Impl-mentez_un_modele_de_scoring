@@ -258,7 +258,6 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 #st.write("Raw Client Info Data:", st.session_state.client_info)
 
             if "error" not in st.session_state.client_info:
-                client_info = st.session_state.client_info[0] 
                 # Créer un dictionnaire avec les informations du client
                 client_info_data = {
                     "Attribute": [
@@ -270,12 +269,12 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                         "Income"
                     ],
                     "Value": [
-                        f"{client_info['age']:.1f} ans",  # Correction ici
-                        client_info['CODE_GENDER'],
-                        client_info['NAME_INCOME_TYPE'],
-                        client_info['NAME_CONTRACT_TYPE'],
-                        client_info['CNT_CHILDREN'],
-                        f"{client_info['AMT_INCOME_TOTAL']:,.0f} €".replace(',', ' ')
+                        f"{st.session_state.client_info['age']} ans",
+                        st.session_state.client_info['CODE_GENDER'],
+                        st.session_state.client_info['NAME_INCOME_TYPE'],
+                        st.session_state.client_info['NAME_CONTRACT_TYPE'],
+                        st.session_state.client_info['CNT_CHILDREN'],
+                        f"{st.session_state.client_info['AMT_INCOME_TOTAL']:,.0f} €".replace(',', ' ')
                     ]
                 }
 
