@@ -290,37 +290,28 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 # Récupérer les moyennes des revenus pour les cibles 0 et 1
                 mean_income_target_0 = st.session_state.client_info['mean_income_target_0']
                 mean_income_target_1 = st.session_state.client_info['mean_income_target_1']
-
                 # Récupérer les moyennes des crédits pour les cibles 0 et 1
                 mean_credit_target_0 = st.session_state.client_info['mean_credit_target_0']
                 mean_credit_target_1 = st.session_state.client_info['mean_credit_target_1']
-
                 # Récupérer les moyennes des âges pour les cibles 0 et 1
                 mean_age_target_0 = st.session_state.client_info['mean_age_target_0']
                 mean_age_target_1 = st.session_state.client_info['mean_age_target_1']
-
                 # Récupérer les moyennes des enfants pour les cibles 0 et 1
                 mean_children_target_0 = st.session_state.client_info['mean_children_target_0']
                 mean_children_target_1 = st.session_state.client_info['mean_children_target_1']
 
                 # Revenu du client
                 client_income = st.session_state.client_info['AMT_INCOME_TOTAL']
-
                 # Crédits du client
                 client_credit = st.session_state.client_info['AMT_CREDIT']
-
                 # Âge du client
                 client_age = st.session_state.client_info['age']
-
                 # Type de revenu du client
                 client_income_type = st.session_state.client_info['NAME_INCOME_TYPE']
-
                 # Genre du client
                 client_gender = st.session_state.client_info['CODE_GENDER']
-
                 # Type de contrat du client
                 client_contract_type = st.session_state.client_info['NAME_CONTRACT_TYPE']
-
                 # Nombre d'enfants du client
                 client_children = st.session_state.client_info['CNT_CHILDREN']
 
@@ -331,10 +322,8 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 children_counts = [mean_children_target_0, mean_children_target_1, client_children]
                 labels = ['Average Income Accepted', 'Average Income Rejected', 'Client Income']    
 
-                # Enregistrer les données dans st.session_state pour affichage ultérieur
-                st.session_state.income_comparison_data = (incomes, credits, ages, children_counts, 
-                                                           labels, 
-                                                           client_income, client_credit, client_age, client_income_type, client_gender, client_contract_type, client_children)
+                # Enregistrer les données dans session_state
+                st.session_state.income_comparison_data = (incomes, credits, ages, children_counts, labels)
             else:
                 st.sidebar.error(st.session_state.client_info["error"])
         else:
