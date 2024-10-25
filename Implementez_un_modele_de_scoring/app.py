@@ -264,7 +264,6 @@ def client_info(client_id):
 
         # Créer un DataFrame avec les informations client
         client_info_df = pd.DataFrame([{
-            'TARGET': client_row['TARGET'],
             'AMT_INCOME_TOTAL': client_row['AMT_INCOME_TOTAL'],
             'age': client_row['age'],
             'NAME_INCOME_TYPE': client_row['NAME_INCOME_TYPE'],

@@ -288,75 +288,59 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 # Afficher le tableau dans la barre latérale
                 st.sidebar.table(client_info_df)
 
-                # Revenu du client
-                client_income = st.session_state.client_info['AMT_INCOME_TOTAL']
-                # Crédits du client
-                client_credit = st.session_state.client_info['AMT_CREDIT']
-                # Âge du client
-                client_age = st.session_state.client_info['age']
-                # Type de revenu du client
-                client_income_type = st.session_state.client_info['NAME_INCOME_TYPE']
-                # Genre du client
-                client_gender = st.session_state.client_info['CODE_GENDER']
-                # Type de contrat du client
-                client_contract_type = st.session_state.client_info['NAME_CONTRACT_TYPE']
-                # Nombre d'enfants du client
-                client_children = st.session_state.client_info['CNT_CHILDREN']
+                # Récupérer les données pour la visualisation
+                client_income = client_info['AMT_INCOME_TOTAL']
+                client_credit = client_info['AMT_CREDIT']
+                client_age = client_info['age']
+                client_children = client_info['CNT_CHILDREN']
 
-                # Préparer les données pour la visualisation
+                # Récupérer les données des clients pour la comparaison
+                incomes = st.session_state.prediction_data['incomes']  # Ajustez selon votre structure de données
+                credits = st.session_state.prediction_data['credits']    # Ajustez selon votre structure de données
+                ages = st.session_state.prediction_data['ages']          # Ajustez selon votre structure de données
+                children_counts = st.session_state.prediction_data['children_counts']  # Ajustez selon votre structure de données
                 labels = ['Accepted', 'Rejected', 'Client']    
 
                 # Enregistrer les données dans session_state
-                st.session_state.income_comparison_data = (incomes, credits, ages, children_counts, labels, client_income)
+                st.session_state.income_comparison_data = (incomes, credits, ages, children_counts, labels, client_income, client_credit, client_age, client_children)
+
             else:
                 st.sidebar.error(st.session_state.client_info["error"])
-        else:
             st.write("Please enter a Client ID and click 'Get Prediction'.")
 
     # Bouton pour afficher la comparaison des caractéristiques du client
     if st.sidebar.button("Compare Client") and "income_comparison_data" in st.session_state:
         # Récupérer les données de comparaison
-        incomes, credits, ages, children_counts, labels, client_income = st.session_state.income_comparison_data
+        incomes, credits, ages, children_counts, labels, client_income, client_credit, client_age, client_children = st.session_state.income_comparison_data
 
-        # Définir les paires de données pour l'affichage
-        data_pairs = [
-            ("Income Comparison", incomes, "Income (€)"),
-            ("Credit Comparison", credits, "Credit (€)"),
-            ("Age Comparison", ages, "Age (Years)"),
-            ("Children Comparison", children_counts, "Number of Children")
-        ]
+        # 1. Graphique de distribution entre Income et Credit
+        fig1, ax1 = plt.subplots(figsize=(6, 6))
+        scatter = ax1.scatter(incomes, credits, c=labels[:-1], cmap='coolwarm', alpha=0.7)
+        ax1.scatter(client_income, client_credit, color='black', s=100, label='Client', edgecolor='white')
 
-        # Afficher les graphiques deux par deux
-        for i in range(0, len(data_pairs), 2):
-            col1, col2 = st.columns(2)
+        # Ajouter des annotations pour le client
+        #mplcursors.cursor(hover=True).connect("add", lambda sel: sel.annotation.set_text(f"Client\nIncome: {client_income:,.0f} €\nCredit: {client_credit:,.0f} €"))
 
-            # Afficher le premier graphique de la paire
-            with col1:
-                title, data, ylabel = data_pairs[i]
-                fig, ax = plt.subplots(figsize=(4, 4))
-                ax.bar(labels, data, color=[
-                    ACCESSIBLE_COLORS['accepted'],
-                    ACCESSIBLE_COLORS['rejected'],
-                    ACCESSIBLE_COLORS['maybe']
-                ])
-                ax.set_ylabel(ylabel)
-                ax.set_title(title)
-                st.pyplot(fig)
+        ax1.set_xlabel("Income (€)")
+        ax1.set_ylabel("Credit (€)")
+        ax1.set_title("Income vs Credit Distribution")
+        ax1.legend()
+        st.pyplot(fig1)
 
-            # Afficher le second graphique de la paire s'il existe
-            if i + 1 < len(data_pairs):
-                with col2:
-                    title, data, ylabel = data_pairs[i + 1]
-                    fig, ax = plt.subplots(figsize=(4, 4))
-                    ax.bar(labels, data, color=[
-                        ACCESSIBLE_COLORS['accepted'],
-                        ACCESSIBLE_COLORS['rejected'],
-                        ACCESSIBLE_COLORS['maybe']
-                    ])
-                    ax.set_ylabel(ylabel)
-                    ax.set_title(title)
-                    st.pyplot(fig)
-                    plt.close(fig)  # Pour éviter de dupliquer le graphique dans le flux de sortie
+        # 2. Graphique de distribution entre Age et Number of Children
+        fig2, ax2 = plt.subplots(figsize=(6, 6))
+        scatter = ax2.scatter(ages, children_counts, c=labels[:-1], cmap='coolwarm', alpha=0.7)
+        ax2.scatter(client_age, client_children, color='black', s=100, label='Client', edgecolor='white')
+
+        # Ajouter des annotations pour le client
+        #mplcursors.cursor(hover=True).connect("add", lambda sel: sel.annotation.set_text(f"Client\nAge: {client_age:.0f} ans\nChildren: {client_children}"))
+
+        ax2.set_xlabel("Age (Years)")
+        ax2.set_ylabel("Number of Children")
+        ax2.set_title("Age vs Number of Children")
+        ax2.legend()
+        st.pyplot(fig2)
+        plt.close(fig)  # Pour éviter de dupliquer le graphique dans le flux de sortie
 
     # Show Feature Importance button only if the prediction is valid
     if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
