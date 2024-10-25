@@ -257,24 +257,17 @@ def client_info(client_id):
     client_row = load_client_info(bucket_name='elasticbeanstalk-eu-north-1-182399693743', file_name='filtered_application_train.csv', client_id=client_id)
 
     if client_row is not None:
-        # Calculer l'âge
-        client_row['age'] = -(client_row['DAYS_BIRTH'] / 365)  # Calculer l'âge
-        client_row['AMT_INCOME_TOTAL'] = client_row['AMT_INCOME_TOTAL'].astype(float)
-        client_row['AMT_CREDIT'] = client_row['AMT_CREDIT'].astype(float)
-
-        # Créer un DataFrame avec les informations client
-        client_info_df = pd.DataFrame([{
-            'AMT_INCOME_TOTAL': client_row['AMT_INCOME_TOTAL'],
-            'age': client_row['age'],
-            'NAME_INCOME_TYPE': client_row['NAME_INCOME_TYPE'],
-            'CODE_GENDER': client_row['CODE_GENDER'],
-            'NAME_CONTRACT_TYPE': client_row['NAME_CONTRACT_TYPE'],
-            'CNT_CHILDREN': client_row['CNT_CHILDREN'],
-            'AMT_CREDIT': client_row['AMT_CREDIT']
-        }])
-
-        # Retourner le DataFrame sous forme de liste de dictionnaires
-        return jsonify(client_info_df.to_dict(orient="records"))
+            age = -(client_row.iloc[0]['DAYS_BIRTH'] / 365)  # Calculer l'âge
+            result = {
+                "AMT_INCOME_TOTAL": float(client_row.iloc[0]['AMT_INCOME_TOTAL']),
+                "AMT_CREDIT": float(client_row.iloc[0]['AMT_CREDIT']),
+                "age": int(age),
+                "NAME_INCOME_TYPE": client_row.iloc[0]['NAME_INCOME_TYPE'],
+                "CODE_GENDER": client_row.iloc[0]['CODE_GENDER'],
+                "NAME_CONTRACT_TYPE": client_row.iloc[0]['NAME_CONTRACT_TYPE'],
+                "CNT_CHILDREN": int(client_row.iloc[0]['CNT_CHILDREN']),
+            }
+            return jsonify(result)
 
     return jsonify({"error": "Client ID not found"}), 404
 
