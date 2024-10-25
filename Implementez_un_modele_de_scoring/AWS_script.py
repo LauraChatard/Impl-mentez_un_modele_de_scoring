@@ -270,12 +270,12 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                         "Income"
                     ],
                     "Value": [
-                        f"{st.session_state.client_info['age']} ans",
-                        st.session_state.client_info['CODE_GENDER'],
-                        st.session_state.client_info['NAME_INCOME_TYPE'],
-                        st.session_state.client_info['NAME_CONTRACT_TYPE'],
-                        st.session_state.client_info['CNT_CHILDREN'],
-                        f"{st.session_state.client_info['AMT_INCOME_TOTAL']:,.0f} €".replace(',', ' ')
+                        f"{client_info['age']:.1f} ans",  # Correction ici
+                        client_info['CODE_GENDER'],
+                        client_info['NAME_INCOME_TYPE'],
+                        client_info['NAME_CONTRACT_TYPE'],
+                        client_info['CNT_CHILDREN'],
+                        f"{client_info['AMT_INCOME_TOTAL']:,.0f} €".replace(',', ' ')
                     ]
                 }
 
@@ -287,19 +287,6 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
 
                 # Afficher le tableau dans la barre latérale
                 st.sidebar.table(client_info_df)
-
-                # Récupérer les moyennes des revenus pour les cibles 0 et 1
-                mean_income_target_0 = st.session_state.client_info['mean_income_target_0']
-                mean_income_target_1 = st.session_state.client_info['mean_income_target_1']
-                # Récupérer les moyennes des crédits pour les cibles 0 et 1
-                mean_credit_target_0 = st.session_state.client_info['mean_credit_target_0']
-                mean_credit_target_1 = st.session_state.client_info['mean_credit_target_1']
-                # Récupérer les moyennes des âges pour les cibles 0 et 1
-                mean_age_target_0 = st.session_state.client_info['mean_age_target_0']
-                mean_age_target_1 = st.session_state.client_info['mean_age_target_1']
-                # Récupérer les moyennes des enfants pour les cibles 0 et 1
-                mean_children_target_0 = st.session_state.client_info['mean_children_target_0']
-                mean_children_target_1 = st.session_state.client_info['mean_children_target_1']
 
                 # Revenu du client
                 client_income = st.session_state.client_info['AMT_INCOME_TOTAL']
@@ -317,10 +304,6 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 client_children = st.session_state.client_info['CNT_CHILDREN']
 
                 # Préparer les données pour la visualisation
-                incomes = [mean_income_target_0, mean_income_target_1, client_income]
-                credits = [mean_credit_target_0, mean_credit_target_1, client_credit]
-                ages = [mean_age_target_0, mean_age_target_1, client_age]
-                children_counts = [mean_children_target_0, mean_children_target_1, client_children]
                 labels = ['Accepted', 'Rejected', 'Client']    
 
                 # Enregistrer les données dans session_state
