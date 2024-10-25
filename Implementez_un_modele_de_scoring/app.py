@@ -267,7 +267,11 @@ def client_info(client_id):
                 "NAME_CONTRACT_TYPE": client_row.iloc[0]['NAME_CONTRACT_TYPE'],
                 "CNT_CHILDREN": int(client_row.iloc[0]['CNT_CHILDREN']),
             }
-            return jsonify(result)
+            # Créer un DataFrame avec toutes les informations des clients basées sur required_columns
+            all_clients_info_df = client_data[required_columns]
+
+            # Retourner les résultats
+            return jsonify(client_info=result, all_clients=all_clients_info_df.to_dict(orient="records"))
 
     return jsonify({"error": "Client ID not found"}), 404
 

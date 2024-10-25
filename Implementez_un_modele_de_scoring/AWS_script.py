@@ -279,13 +279,13 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 }
 
                 # Convertir en DataFrame
-                client_info_df = pd.DataFrame(client_info_data)
+                client_info = pd.DataFrame(client_info_data)
 
                 # Transposer le DataFrame
-                client_info_df = client_info_df.set_index("Attribute")
+                client_info = client_info.set_index("Attribute")
 
                 # Afficher le tableau dans la barre latérale
-                st.sidebar.table(client_info_df)
+                st.sidebar.table(client_info)
 
                 # Récupérer les données pour la visualisation
                 client_income = client_info['AMT_INCOME_TOTAL']
@@ -293,15 +293,13 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 client_age = client_info['age']
                 client_children = client_info['CNT_CHILDREN']
 
-                # Récupérer les données des clients pour la comparaison
-                incomes = st.session_state.prediction_data['incomes']  # Ajustez selon votre structure de données
-                credits = st.session_state.prediction_data['credits']    # Ajustez selon votre structure de données
-                ages = st.session_state.prediction_data['ages']          # Ajustez selon votre structure de données
-                children_counts = st.session_state.prediction_data['children_counts']  # Ajustez selon votre structure de données
+                # Récupérer les données de tous les clients pour la comparaison
+                all_clients = st.session_state.client_info.get("all_clients", [])
+                all_clients_df = pd.DataFrame(all_clients)
                 labels = ['Accepted', 'Rejected', 'Client']    
 
                 # Enregistrer les données dans session_state
-                st.session_state.income_comparison_data = (incomes, credits, ages, children_counts, labels, client_income, client_credit, client_age, client_children)
+                st.session_state.income_comparison_data = (labels, client_income, client_credit, client_age, client_children)
 
             else:
                 st.sidebar.error(st.session_state.client_info["error"])
@@ -310,36 +308,34 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
     # Bouton pour afficher la comparaison des caractéristiques du client
     if st.sidebar.button("Compare Client") and "income_comparison_data" in st.session_state:
         # Récupérer les données de comparaison
-        incomes, credits, ages, children_counts, labels, client_income, client_credit, client_age, client_children = st.session_state.income_comparison_data
+        labels, client_income, client_credit, client_age, client_children = st.session_state.income_comparison_data
 
-        # 1. Graphique de distribution entre Income et Credit
-        fig1, ax1 = plt.subplots(figsize=(6, 6))
-        scatter = ax1.scatter(incomes, credits, c=labels[:-1], cmap='coolwarm', alpha=0.7)
-        ax1.scatter(client_income, client_credit, color='black', s=100, label='Client', edgecolor='white')
+        # Graphiques
+        if not all_clients_df.empty:
+            # 1. Graphique de distribution entre Income et Credit
+            fig1, ax1 = plt.subplots(figsize=(6, 6))
+            scatter = ax1.scatter(all_clients_df['AMT_INCOME_TOTAL'], all_clients_df['AMT_CREDIT'], alpha=0.7)
+            ax1.scatter(client_income, client_credit, color='black', s=100, label='Client', edgecolor='white')
 
-        # Ajouter des annotations pour le client
-        #mplcursors.cursor(hover=True).connect("add", lambda sel: sel.annotation.set_text(f"Client\nIncome: {client_income:,.0f} €\nCredit: {client_credit:,.0f} €"))
+            ax1.set_xlabel("Income (€)")
+            ax1.set_ylabel("Credit (€)")
+            ax1.set_title("Income vs Credit Distribution")
+            ax1.legend()
+            st.pyplot(fig1)
 
-        ax1.set_xlabel("Income (€)")
-        ax1.set_ylabel("Credit (€)")
-        ax1.set_title("Income vs Credit Distribution")
-        ax1.legend()
-        st.pyplot(fig1)
+            # 2. Graphique de distribution entre Age et Number of Children
+            all_clients_df['age'] = -(all_clients_df['DAYS_BIRTH'] / 365)  # Calculer l'âge
+            fig2, ax2 = plt.subplots(figsize=(6, 6))
+            scatter = ax2.scatter(all_clients_df['age'], all_clients_df['CNT_CHILDREN'], alpha=0.7)
+            ax2.scatter(client_age, client_children, color='black', s=100, label='Client', edgecolor='white')
 
-        # 2. Graphique de distribution entre Age et Number of Children
-        fig2, ax2 = plt.subplots(figsize=(6, 6))
-        scatter = ax2.scatter(ages, children_counts, c=labels[:-1], cmap='coolwarm', alpha=0.7)
-        ax2.scatter(client_age, client_children, color='black', s=100, label='Client', edgecolor='white')
-
-        # Ajouter des annotations pour le client
-        #mplcursors.cursor(hover=True).connect("add", lambda sel: sel.annotation.set_text(f"Client\nAge: {client_age:.0f} ans\nChildren: {client_children}"))
-
-        ax2.set_xlabel("Age (Years)")
-        ax2.set_ylabel("Number of Children")
-        ax2.set_title("Age vs Number of Children")
-        ax2.legend()
-        st.pyplot(fig2)
-        plt.close(fig)  # Pour éviter de dupliquer le graphique dans le flux de sortie
+            ax2.set_xlabel("Age (Years)")
+            ax2.set_ylabel("Number of Children")
+            ax2.set_title("Age vs Number of Children")
+            ax2.legend()
+            st.pyplot(fig2)
+            plt.close(fig1)  # Pour éviter de dupliquer le graphique dans le flux de sortie
+            plt.close(fig2)
 
     # Show Feature Importance button only if the prediction is valid
     if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
