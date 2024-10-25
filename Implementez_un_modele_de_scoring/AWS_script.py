@@ -259,23 +259,22 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
 
             if "error" not in st.session_state.client_info:
                 # Créer un dictionnaire avec les informations du client
-                # Vérifiez si les clés existent avant de les utiliser
                 client_info_data = {
                     "Attribute": [
-                        "Age" if 'age' in st.session_state.client_info else "N/A",
-                        "Gender" if 'CODE_GENDER' in st.session_state.client_info else "N/A",
-                        "Income Type" if 'NAME_INCOME_TYPE' in st.session_state.client_info else "N/A",
-                        "Loan Type" if 'NAME_CONTRACT_TYPE' in st.session_state.client_info else "N/A",
-                        "Children" if 'CNT_CHILDREN' in st.session_state.client_info else "N/A",
-                        "Income" if 'AMT_INCOME_TOTAL' in st.session_state.client_info else "N/A"
+                        "Age",
+                        "Gender",
+                        "Income Type",
+                        "Loan Type",
+                        "Children",
+                        "Income"
                     ],
                     "Value": [
-                        f"{st.session_state.client_info['age']} ans" if 'age' in st.session_state.client_info else "N/A",
-                        st.session_state.client_info['CODE_GENDER'] if 'CODE_GENDER' in st.session_state.client_info else "N/A",
-                        st.session_state.client_info['NAME_INCOME_TYPE'] if 'NAME_INCOME_TYPE' in st.session_state.client_info else "N/A",
-                        st.session_state.client_info['NAME_CONTRACT_TYPE'] if 'NAME_CONTRACT_TYPE' in st.session_state.client_info else "N/A",
-                        st.session_state.client_info['CNT_CHILDREN'] if 'CNT_CHILDREN' in st.session_state.client_info else "N/A",
-                        f"{st.session_state.client_info['AMT_INCOME_TOTAL']:,.0f} €".replace(',', ' ') if 'AMT_INCOME_TOTAL' in st.session_state.client_info else "N/A"
+                        f"{st.session_state.client_info['age']} ans",
+                        st.session_state.client_info['CODE_GENDER'],
+                        st.session_state.client_info['NAME_INCOME_TYPE'],
+                        st.session_state.client_info['NAME_CONTRACT_TYPE'],
+                        st.session_state.client_info['CNT_CHILDREN'],
+                        f"{st.session_state.client_info['AMT_INCOME_TOTAL']:,.0f} €".replace(',', ' ')
                     ]
                 }
 
