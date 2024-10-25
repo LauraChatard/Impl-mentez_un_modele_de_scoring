@@ -253,11 +253,16 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
     with st.sidebar.expander("Client Info"):
         if client_id:
             if st.session_state.client_info is None:
-                st.session_state.client_info = get_client_info(client_id)
+                response_data = get_client_info(client_id)  # Appel de la fonction
+                st.session_state.client_info = response_data  # Stocker la réponse complète
+
                 # Afficher les données brutes pour débogage
                 st.write("Raw Client Info Data:", st.session_state.client_info)
 
             if "error" not in st.session_state.client_info:
+                client_info = st.session_state.client_info.get("client_info")  # Accéder à client_info
+                all_clients = st.session_state.client_info.get("all_clients")  # Accéder à all_clients
+
                 # Créer un dictionnaire avec les informations du client
                 client_info_data = {
                     "Attribute": [
@@ -269,23 +274,23 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                         "Income"
                     ],
                     "Value": [
-                        f"{st.session_state.client_info['age']} ans",
-                        st.session_state.client_info['CODE_GENDER'],
-                        st.session_state.client_info['NAME_INCOME_TYPE'],
-                        st.session_state.client_info['NAME_CONTRACT_TYPE'],
-                        st.session_state.client_info['CNT_CHILDREN'],
-                        f"{st.session_state.client_info['AMT_INCOME_TOTAL']:,.0f} €".replace(',', ' ')
+                        f"{client_info['age']} ans",
+                        client_info['CODE_GENDER'],
+                        client_info['NAME_INCOME_TYPE'],
+                        client_info['NAME_CONTRACT_TYPE'],
+                        client_info['CNT_CHILDREN'],
+                        f"{client_info['AMT_INCOME_TOTAL']:,.0f} €".replace(',', ' ')
                     ]
                 }
 
                 # Convertir en DataFrame
-                client_info = pd.DataFrame(client_info_data)
+                client_info_df = pd.DataFrame(client_info_data)
 
                 # Transposer le DataFrame
-                client_info = client_info.set_index("Attribute")
+                client_info_df = client_info_df.set_index("Attribute")
 
                 # Afficher le tableau dans la barre latérale
-                st.sidebar.table(client_info)
+                st.sidebar.table(client_info_df)
 
                 # Récupérer les données pour la visualisation
                 client_income = client_info['AMT_INCOME_TOTAL']
