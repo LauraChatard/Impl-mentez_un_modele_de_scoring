@@ -253,30 +253,26 @@ def client_info(client_id):
         logging.error(f"Missing columns in client data: {missing_columns}")
         return {"error": "Missing data columns"}, 500
 
-    # Calculer les moyennes par cible (target) pour chaque colonne
-    mean_income_target_0 = client_data[client_data['TARGET'] == 0]['AMT_INCOME_TOTAL'].mean()
-    mean_income_target_1 = client_data[client_data['TARGET'] == 1]['AMT_INCOME_TOTAL'].mean()
-    mean_credit_target_0 = client_data[client_data['TARGET'] == 0]['AMT_CREDIT'].mean()
-    mean_credit_target_1 = client_data[client_data['TARGET'] == 1]['AMT_CREDIT'].mean()
-    mean_age_target_0 = -(client_data[client_data['TARGET'] == 0]['DAYS_BIRTH'].mean() / 365)
-    mean_age_target_1 = -(client_data[client_data['TARGET'] == 1]['DAYS_BIRTH'].mean() / 365)
-    mean_children_target_0 = client_data[client_data['TARGET'] == 0]['CNT_CHILDREN'].mean()
-    mean_children_target_1 = client_data[client_data['TARGET'] == 1]['CNT_CHILDREN'].mean()
-
-
     # Filtrer les données pour le client spécifié
     client_row = load_client_info(bucket_name='elasticbeanstalk-eu-north-1-182399693743', file_name='filtered_application_train.csv', client_id=client_id)
 
     if client_row is not None:
-        # Préparer le DataFrame avec toutes les informations
+        # Calculer l'âge
         client_row['age'] = -(client_row['DAYS_BIRTH'] / 365)  # Calculer l'âge
         client_row['AMT_INCOME_TOTAL'] = client_row['AMT_INCOME_TOTAL'].astype(float)
         client_row['AMT_CREDIT'] = client_row['AMT_CREDIT'].astype(float)
 
-        # Créer un DataFrame avec les colonnes souhaitées
-        client_info_df = client_data[['TARGET', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'DAYS_BIRTH', 'CNT_CHILDREN', 'CODE_GENDER', 'NAME_CONTRACT_TYPE']]
-        client_info_df['age'] = -(client_info_df['DAYS_BIRTH'] / 365)  # Ajouter l'âge
-        client_info_df = client_info_df.drop(columns=['DAYS_BIRTH'])  # Supprimer DAYS_BIRTH si non nécessaire
+        # Créer un DataFrame avec les informations client
+        client_info_df = pd.DataFrame([{
+            'TARGET': client_row['TARGET'],
+            'AMT_INCOME_TOTAL': client_row['AMT_INCOME_TOTAL'],
+            'age': client_row['age'],
+            'NAME_INCOME_TYPE': client_row['NAME_INCOME_TYPE'],
+            'CODE_GENDER': client_row['CODE_GENDER'],
+            'NAME_CONTRACT_TYPE': client_row['NAME_CONTRACT_TYPE'],
+            'CNT_CHILDREN': client_row['CNT_CHILDREN'],
+            'AMT_CREDIT': client_row['AMT_CREDIT']
+        }])
 
         # Retourner le DataFrame sous forme de liste de dictionnaires
         return jsonify(client_info_df.to_dict(orient="records"))
