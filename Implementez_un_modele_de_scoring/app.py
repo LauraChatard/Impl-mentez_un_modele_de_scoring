@@ -268,25 +268,18 @@ def client_info(client_id):
     client_row = load_client_info(bucket_name='elasticbeanstalk-eu-north-1-182399693743', file_name='filtered_application_train.csv', client_id=client_id)
 
     if client_row is not None:
-        age = -(client_row.iloc[0]['DAYS_BIRTH'] / 365)  # Calculer l'âge
-        result = {
-            "AMT_INCOME_TOTAL": float(client_row.iloc[0]['AMT_INCOME_TOTAL']),
-            "AMT_CREDIT": float(client_row.iloc[0]['AMT_CREDIT']),
-            "age": int(age),
-            "NAME_INCOME_TYPE": client_row.iloc[0]['NAME_INCOME_TYPE'],
-            "CODE_GENDER": client_row.iloc[0]['CODE_GENDER'],
-            "NAME_CONTRACT_TYPE": client_row.iloc[0]['NAME_CONTRACT_TYPE'],
-            "CNT_CHILDREN": int(client_row.iloc[0]['CNT_CHILDREN']),
-            "mean_income_target_0": float(mean_income_target_0),
-            "mean_income_target_1": float(mean_income_target_1),
-            "mean_credit_target_0": float(mean_credit_target_0),
-            "mean_credit_target_1": float(mean_credit_target_1),
-            "mean_age_target_0": float(mean_age_target_0),
-            "mean_age_target_1": float(mean_age_target_1),
-            "mean_children_target_0": float(mean_children_target_0),
-            "mean_children_target_1": float(mean_children_target_1)
-        }
-        return jsonify(result)
+        # Préparer le DataFrame avec toutes les informations
+        client_row['age'] = -(client_row['DAYS_BIRTH'] / 365)  # Calculer l'âge
+        client_row['AMT_INCOME_TOTAL'] = client_row['AMT_INCOME_TOTAL'].astype(float)
+        client_row['AMT_CREDIT'] = client_row['AMT_CREDIT'].astype(float)
+
+        # Créer un DataFrame avec les colonnes souhaitées
+        client_info_df = client_data[['TARGET', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'DAYS_BIRTH', 'CNT_CHILDREN', 'CODE_GENDER', 'NAME_CONTRACT_TYPE']]
+        client_info_df['age'] = -(client_info_df['DAYS_BIRTH'] / 365)  # Ajouter l'âge
+        client_info_df = client_info_df.drop(columns=['DAYS_BIRTH'])  # Supprimer DAYS_BIRTH si non nécessaire
+
+        # Retourner le DataFrame sous forme de liste de dictionnaires
+        return jsonify(client_info_df.to_dict(orient="records"))
 
     return jsonify({"error": "Client ID not found"}), 404
 

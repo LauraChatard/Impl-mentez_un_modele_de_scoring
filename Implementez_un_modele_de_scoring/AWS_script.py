@@ -258,6 +258,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 #st.write("Raw Client Info Data:", st.session_state.client_info)
 
             if "error" not in st.session_state.client_info:
+                client_info = st.session_state.client_info[0] 
                 # Créer un dictionnaire avec les informations du client
                 client_info_data = {
                     "Attribute": [
