@@ -320,7 +320,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 credits = [mean_credit_target_0, mean_credit_target_1, client_credit]
                 ages = [mean_age_target_0, mean_age_target_1, client_age]
                 children_counts = [mean_children_target_0, mean_children_target_1, client_children]
-                labels = ['Average Income Accepted', 'Average Income Rejected', 'Client Income']    
+                labels = ['Accepted', 'Rejected', 'Client']    
 
                 # Enregistrer les données dans session_state
                 st.session_state.income_comparison_data = (incomes, credits, ages, children_counts, labels, client_income)
