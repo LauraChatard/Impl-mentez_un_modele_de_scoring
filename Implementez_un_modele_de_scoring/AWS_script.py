@@ -319,7 +319,20 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
         if not all_clients_df.empty:
             # 1. Graphique de distribution entre Income et Credit
             fig1, ax1 = plt.subplots(figsize=(6, 6))
-            scatter = ax1.scatter(all_clients_df['AMT_INCOME_TOTAL'], all_clients_df['AMT_CREDIT'], alpha=0.7)
+
+            # Colorer les clients selon leur statut
+            for status, color in ACCESSIBLE_COLORS.items():
+                # Filtrer les clients selon le statut
+                status_clients = all_clients_df[all_clients_df['TARGET'] == (0 if status == 'accepted' else 1)]
+                ax1.scatter(
+                    status_clients['AMT_INCOME_TOTAL'],
+                    status_clients['AMT_CREDIT'],
+                    alpha=0.7,
+                    color=color,
+                    label=status.capitalize()  # Label pour la légende
+                )
+
+            # Ajouter le client spécifique
             ax1.scatter(client_income, client_credit, color='black', s=100, label='Client', edgecolor='white')
 
             ax1.set_xlabel("Income (€)")
@@ -331,7 +344,20 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             # 2. Graphique de distribution entre Age et Number of Children
             all_clients_df['age'] = -(all_clients_df['DAYS_BIRTH'] / 365)  # Calculer l'âge
             fig2, ax2 = plt.subplots(figsize=(6, 6))
-            scatter = ax2.scatter(all_clients_df['age'], all_clients_df['CNT_CHILDREN'], alpha=0.7)
+
+            # Colorer les clients selon leur statut pour le second graphique
+            for status, color in ACCESSIBLE_COLORS.items():
+                # Filtrer les clients selon le statut
+                status_clients = all_clients_df[all_clients_df['TARGET'] == (0 if status == 'accepted' else 1)]
+                ax2.scatter(
+                    status_clients['age'],
+                    status_clients['CNT_CHILDREN'],
+                    alpha=0.7,
+                    color=color,
+                    label=status.capitalize()  # Label pour la légende
+                )
+
+            # Ajouter le client spécifique
             ax2.scatter(client_age, client_children, color='black', s=100, label='Client', edgecolor='white')
 
             ax2.set_xlabel("Age (Years)")
@@ -339,6 +365,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             ax2.set_title("Age vs Number of Children")
             ax2.legend()
             st.pyplot(fig2)
+
             plt.close(fig1)  # Pour éviter de dupliquer le graphique dans le flux de sortie
             plt.close(fig2)
 
