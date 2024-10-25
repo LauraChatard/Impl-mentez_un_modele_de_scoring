@@ -323,7 +323,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 labels = ['Average Income Accepted', 'Average Income Rejected', 'Client Income']    
 
                 # Enregistrer les données dans session_state
-                st.session_state.income_comparison_data = (incomes, credits, ages, children_counts, labels)
+                st.session_state.income_comparison_data = (incomes, credits, ages, children_counts, labels, client_income)
             else:
                 st.sidebar.error(st.session_state.client_info["error"])
         else:
