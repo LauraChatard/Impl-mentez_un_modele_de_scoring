@@ -315,15 +315,17 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
         # Récupérer les données de comparaison
         labels, client_income, client_credit, client_age, client_children = st.session_state.income_comparison_data
 
+        # Extraire uniquement les couleurs 'accepted' et 'rejected'
+        colors = {'accepted': ACCESSIBLE_COLORS['accepted'], 'rejected': ACCESSIBLE_COLORS['rejected']}
+
         # Graphiques
         if not all_clients_df.empty:
             # 1. Graphique de distribution entre Income et Credit
             fig1, ax1 = plt.subplots(figsize=(6, 6))
 
-            # Colorer les clients selon leur statut
-            for status, color in ACCESSIBLE_COLORS.items():
-                # Filtrer les clients selon le statut
-                status_clients = all_clients_df[all_clients_df['TARGET'] == (0 if status == 'accepted' else 1)]
+            for target_value, (status, color) in zip([0, 1], colors.items()):
+            # Filtrer les clients selon le statut
+                status_clients = all_clients_df[all_clients_df['TARGET'] == target_value]
                 ax1.scatter(
                     status_clients['AMT_INCOME_TOTAL'],
                     status_clients['AMT_CREDIT'],
@@ -333,7 +335,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 )
 
             # Ajouter le client spécifique
-            ax1.scatter(client_income, client_credit, color='black', s=100, label='Client', edgecolor='white')
+            ax1.scatter(client_income, client_credit, color='black', s=100, label='Client', edgecolor='black')
 
             ax1.set_xlabel("Income (€)")
             ax1.set_ylabel("Credit (€)")
@@ -346,9 +348,9 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             fig2, ax2 = plt.subplots(figsize=(6, 6))
 
             # Colorer les clients selon leur statut pour le second graphique
-            for status, color in ACCESSIBLE_COLORS.items():
+            for target_value, (status, color) in zip([0, 1], colors.items()):
                 # Filtrer les clients selon le statut
-                status_clients = all_clients_df[all_clients_df['TARGET'] == (0 if status == 'accepted' else 1)]
+                status_clients = all_clients_df[all_clients_df['TARGET'] == target_value]
                 ax2.scatter(
                     status_clients['age'],
                     status_clients['CNT_CHILDREN'],
@@ -358,7 +360,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 )
 
             # Ajouter le client spécifique
-            ax2.scatter(client_age, client_children, color='black', s=100, label='Client', edgecolor='white')
+            ax2.scatter(client_age, client_children, color='black', s=100, label='Client', edgecolor='black')
 
             ax2.set_xlabel("Age (Years)")
             ax2.set_ylabel("Number of Children")
