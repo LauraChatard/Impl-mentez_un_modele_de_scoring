@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 # Function to get prediction from API
 def get_prediction(sk_id_curr):
@@ -375,38 +376,37 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
         
         st.plotly_chart(fig2)
 
-        # 3. Graphiques camembert pour la répartition de Gender, Loan Type et Income Type pour clients acceptés et refusés
+# 3. Graphiques camembert pour la répartition de Gender, Loan Type et Income Type pour clients acceptés et refusés
         for attribute, title in zip(['CODE_GENDER', 'NAME_CONTRACT_TYPE', 'NAME_INCOME_TYPE'],
                                      ['Gender', 'Loan Type', 'Income Type']):
+            # Création de la figure avec des sous-graphiques
+            fig = make_subplots(rows=1, cols=2, subplot_titles=('Accepted', 'Rejected'))
+
             # Répartition pour clients acceptés
             accepted_values = all_clients_df[all_clients_df['TARGET'] == 0][attribute].value_counts()
             accepted_labels = accepted_values.index.tolist()
             accepted_values = accepted_values.values.tolist()
             
-            # Répartition pour clients refusés
-            rejected_values = all_clients_df[all_clients_df['TARGET'] == 1][attribute].value_counts()
-            rejected_labels = rejected_values.index.tolist()
-            rejected_values = rejected_values.values.tolist()
-
-            # Création du graphique
-            fig = go.Figure()
-
             # Ajout du camembert pour les clients acceptés
             fig.add_trace(go.Pie(
                 labels=accepted_labels,
                 values=accepted_values,
                 name='Accepted',
                 marker=dict(colors=[ACCESSIBLE_COLORS['accepted']] * len(accepted_labels))
-            ))
+            ), row=1, col=1)
+
+            # Répartition pour clients refusés
+            rejected_values = all_clients_df[all_clients_df['TARGET'] == 1][attribute].value_counts()
+            rejected_labels = rejected_values.index.tolist()
+            rejected_values = rejected_values.values.tolist()
 
             # Ajout du camembert pour les clients refusés
             fig.add_trace(go.Pie(
                 labels=rejected_labels,
                 values=rejected_values,
                 name='Rejected',
-                marker=dict(colors=[ACCESSIBLE_COLORS['rejected']] * len(rejected_labels)),
-                visible=False  # Masquer par défaut
-            ))
+                marker=dict(colors=[ACCESSIBLE_COLORS['rejected']] * len(rejected_labels))
+            ), row=1, col=2)
 
             fig.update_layout(
                 title=f"{title} Distribution",
