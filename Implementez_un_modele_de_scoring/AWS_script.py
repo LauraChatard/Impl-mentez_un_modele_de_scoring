@@ -165,10 +165,10 @@ if st.button("Get Prediction"):
             # Add bars for each segment (rejected, maybe, accepted)
                 fig.add_trace(go.Bar(
                     y=['Loan Acceptance Probability'],
-                    x=[red_end],
-                    name='Rejected',
+                    x=[blue_end],
+                    name='accepted',
                     orientation='h',
-                    marker=dict(color=ACCESSIBLE_COLORS['rejected']),
+                    marker=dict(color=ACCESSIBLE_COLORS['accepted']),
                     hoverinfo='skip'  # Disable hover for bars
                 ))
                 fig.add_trace(go.Bar(
@@ -185,7 +185,7 @@ if st.button("Get Prediction"):
                     x=[red_end - red_start],
                     name='Accepted',
                     orientation='h',
-                    marker=dict(color=ACCESSIBLE_COLORS['accepted']),
+                    marker=dict(color=ACCESSIBLE_COLORS['rejected']),
                     base=red_start,
                     hoverinfo='skip'  # Disable hover for bars
                 ))
@@ -196,8 +196,8 @@ if st.button("Get Prediction"):
                     barmode='stack',
                     xaxis=dict(
                         range=[0, 1],
-                        tickvals=[0, red_end, orange_end, red_end],  # Valeurs de début et de fin
-                        ticktext=['0', '0.35', '0.45', '1'],  # Texte des ticks
+                        tickvals=[0, blue_end, orange_end, red_end],  # Valeurs de début et de fin
+                        ticktext=['0', '0.2', '0.25', '1'],  # Texte des ticks
                         title='Probability',
                         showgrid=False
                     ),
@@ -358,8 +358,11 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
 
             # 3. Graphiques camembert pour la répartition de Gender, Loan Type et Income Type pour clients acceptés et refusés
             for attribute, title in zip(['CODE_GENDER', 'NAME_CONTRACT_TYPE', 'NAME_INCOME_TYPE'],
-                                        ['Gender Distribution', 'Loan Type Distribution', 'Income Type Distribution']):
+                                        ['Gender', 'Loan Type', 'Income Type']):
                 fig, (ax3, ax4) = plt.subplots(1, 2, figsize=(12, 6))
+                
+                # Augmentation de l'espacement entre les graphiques pour éviter les chevauchements
+                fig.subplots_adjust(wspace=1.2)  # Ajustement de l'espacement horizontal
                 
                 # Couleur de texte et paramètres pour le texte
                 text_color = ACCESSIBLE_COLORS['text']
@@ -375,7 +378,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                     colors=[ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected']]
                 )
                 # Style du texte dans le graphique de clients acceptés
-                ax3.set_title(f"{title} - Accepted Clients", fontsize=title_size)
+                ax3.set_title(f"{title} - Accepted", fontsize=title_size)
                 for text in texts:
                     text.set_color(text_color)
                     text.set_fontsize(text_size)
@@ -392,7 +395,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                     colors=[ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected']]
                 )
                 # Style du texte dans le graphique de clients refusés
-                ax4.set_title(f"{title} - Rejected Clients", fontsize=title_size)
+                ax4.set_title(f"{title} - Rejected", fontsize=title_size)
                 for text in texts:
                     text.set_color(text_color)
                     text.set_fontsize(text_size)
