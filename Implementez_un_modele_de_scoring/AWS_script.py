@@ -340,6 +340,16 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             # Ajouter le client spécifique
             ax1.scatter(client_income, client_credit, color='white', s=100, label='Client', edgecolor='white')
 
+            # Ajout du point pour le client spécifique avec hover info
+            fig.add_trace(go.Scatter(
+                x=[client_income],
+                y=[client_credit],
+                mode='markers+text',
+                marker=dict(color='white', size=TEXT_SIZES['comment'], line=dict(color='white', width=2)),
+                name="Client",
+                text=[f"Income: €{client_income}<br>Credit: €{client_credit}"],  # Texte pour hover
+                hoverinfo="text"  # Activer l'info-bulle
+            ))    
             ax1.set_xlabel("Income (€)")
             ax1.set_ylabel("Credit (€)")
             ax1.set_title("Income vs Credit Distribution")
@@ -361,16 +371,16 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                                         ['Gender', 'Loan Type', 'Income Type']):
                 fig, (ax3, ax4) = plt.subplots(1, 2, figsize=(12, 6))
                 
+                # Couleur de texte et paramètres pour le texte
+                text_color = ACCESSIBLE_COLORS['text']
+                title_size = TEXT_SIZES['title']
+                text_size = TEXT_SIZES['text']
+                
                 # Ajout d'un titre global centré pour les deux graphiques
                 fig.suptitle(title.upper(), fontsize=title_size + 2, color=text_color, y=1.05)  # Ajustement de la position du titre global
 
                 # Augmentation de l'espacement entre les graphiques pour éviter les chevauchements
                 fig.subplots_adjust(wspace=1.2, top=0.85)  # Ajustement de l'espacement horizontal
-                
-                # Couleur de texte et paramètres pour le texte
-                text_color = ACCESSIBLE_COLORS['text']
-                title_size = TEXT_SIZES['title']
-                text_size = TEXT_SIZES['text']
 
                 # Répartition pour clients acceptés
                 accepted_values = all_clients_df[all_clients_df['TARGET'] == 0][attribute].value_counts()
