@@ -412,7 +412,8 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 rejected_labels = rejected_values.index.tolist()
                 rejected_values = rejected_values.values.tolist()
                 rejected_colors = get_color_palette(rejected_labels, ACCESSIBLE_COLORS['rejected'])
-
+                st.write("Rejected Colors:", rejected_colors)
+                
                 # Ajout du camembert pour les clients refusés
                 fig.add_trace(go.Pie(
                     labels=rejected_labels,
