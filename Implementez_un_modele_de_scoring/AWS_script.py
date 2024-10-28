@@ -262,8 +262,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             if "error" not in st.session_state.client_info:
                 client_info = st.session_state.client_info.get("client_info")  # Accéder à client_info
                 all_clients = st.session_state.client_info.get("all_clients")  # Accéder à all_clients
-                st.session_state.client_info = None 
-                
+
                 # Créer un dictionnaire avec les informations du client
                 client_info_data = {
                     "Attribute": [
@@ -493,3 +492,4 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
 
         else:
             st.error("No SHAP importances available. Please check the prediction response.")
+    st.session_state.client_info = None 
