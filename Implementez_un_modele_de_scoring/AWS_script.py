@@ -28,13 +28,14 @@ def get_client_info(client_id):
     else:
         return {"error": f"Error {response.status_code}: {response.text}"}
 
-GRAFIC_COLORS = ['c874f4', '7484f4', '75e5e5', '75e5a3', 'ade575']
+GRAFIC_COLORS_accepted = ['0f92ff', '0fbaff', '65dbe7', '5d64f3']
+GRAFIC_COLORS_rejected = ['fc172f', 'fc3317', 'fc6a17', 'fc6317']
 
 # Define a color palette respecting WCAG standards
 ACCESSIBLE_COLORS = {
-    'rejected': '#8B0000',  # Dark Red
+    'rejected': '#fc3317',  # Dark Red
     'maybe': '#FFA500',     # Dark Orange
-    'accepted': '#005B5C',  # Dark Teal
+    'accepted': '#0f92ff',  # Dark Teal
     'text': '#FFFFFF',      # White for text
     'object': '#FFFFFF'       # White for lines
 }
@@ -369,7 +370,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             fig2.add_trace(go.Bar(
                 x=['Accepted', 'Rejected', 'Client'],
                 y=[accepted_age_avg, rejected_age_avg, client_age],
-                marker_color=['#00cc96', '#ff6347', 'white'],  # Utiliser les couleurs acceptées et refusées
+                marker_color=[ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected'], 'white'],  # Utiliser les couleurs acceptées et refusées
             ))
 
             fig2.update_layout(
@@ -400,7 +401,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                     labels=accepted_labels,
                     values=accepted_values,
                     name='Accepted',
-                    marker=dict(colors=GRAFIC_COLORS)
+                    marker=dict(colors=GRAFIC_COLORS_accepted)
                 ), row=1, col=1)
 
                 # Répartition pour clients refusés
@@ -413,7 +414,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                     labels=rejected_labels,
                     values=rejected_values,
                     name='Rejected',
-                    marker=dict(colors=GRAFIC_COLORS)
+                    marker=dict(colors=GRAFIC_COLORS_rejected)
                 ), row=1, col=2)
 
                 fig.update_layout(
