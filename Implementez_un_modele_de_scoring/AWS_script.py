@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
@@ -27,11 +28,12 @@ def get_client_info(client_id):
     else:
         return {"error": f"Error {response.status_code}: {response.text}"}
     
-# Fonction pour obtenir une palette de couleurs
-def get_color_palette(values, color):
+def get_color_palette(values, base_color):
     # Créer un nuancier basé sur le nombre de valeurs uniques
-    unique_values = len(values)
-    return [color] * unique_values 
+    unique_values = len(set(values))
+    # Générer une palette de couleurs
+    return [mcolors.to_hex(mcolors.hsv_to_rgb((i / unique_values, 1, 1))) for i in range(unique_values)]
+
 
 # Define a color palette respecting WCAG standards
 ACCESSIBLE_COLORS = {
@@ -413,7 +415,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 rejected_values = rejected_values.values.tolist()
                 rejected_colors = get_color_palette(rejected_labels, ACCESSIBLE_COLORS['rejected'])
                 st.write("Rejected Colors:", rejected_colors)
-                
+
                 # Ajout du camembert pour les clients refusés
                 fig.add_trace(go.Pie(
                     labels=rejected_labels,
