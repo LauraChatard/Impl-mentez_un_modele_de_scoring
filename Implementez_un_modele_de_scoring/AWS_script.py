@@ -260,10 +260,10 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 st.session_state.client_info = response_data  # Stocker la réponse complète
                 
             if "error" not in st.session_state.client_info:
-                st.session_state.client_info = None 
                 client_info = st.session_state.client_info.get("client_info")  # Accéder à client_info
                 all_clients = st.session_state.client_info.get("all_clients")  # Accéder à all_clients
-
+                st.session_state.client_info = None 
+                
                 # Créer un dictionnaire avec les informations du client
                 client_info_data = {
                     "Attribute": [
