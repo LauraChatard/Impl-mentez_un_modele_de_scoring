@@ -26,6 +26,12 @@ def get_client_info(client_id):
         return response.json()
     else:
         return {"error": f"Error {response.status_code}: {response.text}"}
+    
+# Fonction pour obtenir une palette de couleurs
+def get_color_palette(values, color):
+    # Créer un nuancier basé sur le nombre de valeurs uniques
+    unique_values = len(values)
+    return [color] * unique_values 
 
 # Define a color palette respecting WCAG standards
 ACCESSIBLE_COLORS = {
@@ -391,26 +397,26 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 accepted_values = all_clients_df[all_clients_df['TARGET'] == 0][attribute].value_counts()
                 accepted_labels = accepted_values.index.tolist()
                 accepted_values = accepted_values.values.tolist()
+                accepted_colors = get_color_palette(accepted_labels, ACCESSIBLE_COLORS['accepted'])
                 
                 # Ajout du camembert pour les clients acceptés
                 fig.add_trace(go.Pie(
                     labels=accepted_labels,
-                    values=accepted_values,
                     name='Accepted',
-                    marker=dict(colors=[ACCESSIBLE_COLORS['accepted']] * len(accepted_labels))
+                    marker=dict(colors=accepted_colors)
                 ), row=1, col=1)
 
                 # Répartition pour clients refusés
                 rejected_values = all_clients_df[all_clients_df['TARGET'] == 1][attribute].value_counts()
                 rejected_labels = rejected_values.index.tolist()
                 rejected_values = rejected_values.values.tolist()
+                rejected_colors = get_color_palette(rejected_labels, ACCESSIBLE_COLORS['rejected'])
 
                 # Ajout du camembert pour les clients refusés
                 fig.add_trace(go.Pie(
                     labels=rejected_labels,
-                    values=rejected_values,
                     name='Rejected',
-                    marker=dict(colors=[ACCESSIBLE_COLORS['rejected']] * len(rejected_labels))
+                    marker=dict(colors=rejected_colors)
                 ), row=1, col=2)
 
                 fig.update_layout(
