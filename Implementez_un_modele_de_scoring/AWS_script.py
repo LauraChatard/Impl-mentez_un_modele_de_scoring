@@ -211,7 +211,7 @@ if st.button("Get Prediction"):
                     annotations=[
                         # Annotation for "Rejected" above the first bar
                         dict(
-                            x=red_end / 2,  # Position in the middle of the "Rejected" bar
+                            x=red_start + (red_end - red_start) / 2,  # Position in the middle of the "Rejected" bar
                             y=-0.5,  # Adjusted Y position above the bar
                             xref='x',
                             yref='y',
@@ -231,7 +231,7 @@ if st.button("Get Prediction"):
                         ),
                         # Annotation for "Accepted" above the third bar
                         dict(
-                            x=red_start + (red_end - red_start) / 2,  # Position in the middle of the "Accepted" bar
+                            x=blue_end / 2,  # Position in the middle of the "Accepted" bar
                             y=-0.5,  # Adjusted Y position above the bar
                             xref='x',
                             yref='y',
@@ -361,8 +361,11 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                                         ['Gender', 'Loan Type', 'Income Type']):
                 fig, (ax3, ax4) = plt.subplots(1, 2, figsize=(12, 6))
                 
+                # Ajout d'un titre global centré pour les deux graphiques
+                fig.suptitle(title.upper(), fontsize=title_size + 2, color=text_color, y=1.05)  # Ajustement de la position du titre global
+
                 # Augmentation de l'espacement entre les graphiques pour éviter les chevauchements
-                fig.subplots_adjust(wspace=1.2)  # Ajustement de l'espacement horizontal
+                fig.subplots_adjust(wspace=1.2, top=0.85)  # Ajustement de l'espacement horizontal
                 
                 # Couleur de texte et paramètres pour le texte
                 text_color = ACCESSIBLE_COLORS['text']
