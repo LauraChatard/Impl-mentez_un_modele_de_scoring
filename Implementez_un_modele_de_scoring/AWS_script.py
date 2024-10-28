@@ -258,10 +258,8 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             if st.session_state.client_info is None:
                 response_data = get_client_info(client_id)  # Appel de la fonction
                 st.session_state.client_info = response_data  # Stocker la réponse complète
-
-                # Afficher les données brutes pour débogage
-                st.write("Raw Client Info Data:", st.session_state.client_info)
-
+                st.session_state.last_client_id = client_id 
+                
             if "error" not in st.session_state.client_info:
                 client_info = st.session_state.client_info.get("client_info")  # Accéder à client_info
                 all_clients = st.session_state.client_info.get("all_clients")  # Accéder à all_clients
