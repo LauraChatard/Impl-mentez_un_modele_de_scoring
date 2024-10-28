@@ -358,16 +358,46 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                                         ['Gender Distribution', 'Loan Type Distribution', 'Income Type Distribution']):
                 fig, (ax3, ax4) = plt.subplots(1, 2, figsize=(12, 6))
                 
+                # Couleur de texte et paramètres pour le texte
+                text_color = ACCESSIBLE_COLORS['text']
+                title_size = TEXT_SIZES['title']
+                text_size = TEXT_SIZES['text']
+
                 # Répartition pour clients acceptés
                 accepted_values = all_clients_df[all_clients_df['TARGET'] == 0][attribute].value_counts()
-                ax3.pie(accepted_values, labels=accepted_values.index, autopct='%1.1f%%', colors=['#005B5C', '#8B0000'])
-                ax3.set_title(f"{title} - Accepted Clients")
-                
+                wedges, texts, autotexts = ax3.pie(
+                    accepted_values,
+                    labels=accepted_values.index,
+                    autopct='%1.1f%%',
+                    colors=[ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected']]
+                )
+                # Style du texte dans le graphique de clients acceptés
+                ax3.set_title(f"{title} - Accepted Clients", fontsize=title_size)
+                for text in texts:
+                    text.set_color(text_color)
+                    text.set_fontsize(text_size)
+                for autotext in autotexts:
+                    autotext.set_color(text_color)
+                    autotext.set_fontsize(TEXT_SIZES['comment'])
+
                 # Répartition pour clients refusés
                 rejected_values = all_clients_df[all_clients_df['TARGET'] == 1][attribute].value_counts()
-                ax4.pie(rejected_values, labels=rejected_values.index, autopct='%1.1f%%', colors=['#005B5C', '#8B0000'])
-                ax4.set_title(f"{title} - Rejected Clients")
-                
+                wedges, texts, autotexts = ax4.pie(
+                    rejected_values,
+                    labels=rejected_values.index,
+                    autopct='%1.1f%%',
+                    colors=[ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected']]
+                )
+                # Style du texte dans le graphique de clients refusés
+                ax4.set_title(f"{title} - Rejected Clients", fontsize=title_size)
+                for text in texts:
+                    text.set_color(text_color)
+                    text.set_fontsize(text_size)
+                for autotext in autotexts:
+                    autotext.set_color(text_color)
+                    autotext.set_fontsize(TEXT_SIZES['comment'])
+
+                # Affichage du graphique dans Streamlit
                 st.pyplot(fig)
                 plt.close(fig)
 
