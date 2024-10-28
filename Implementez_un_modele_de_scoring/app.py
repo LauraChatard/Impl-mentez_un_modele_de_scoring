@@ -110,11 +110,11 @@ def get_client_data(client_id):
     return None
 
 def classify_decision(predictions_proba):
-    threshold_low = 0.35
-    threshold_high = 0.45
+    threshold_low = 0.2
+    threshold_high = 0.25
     if threshold_low <= predictions_proba <= threshold_high:
         return 'MAYBE'
-    elif predictions_proba > 0.45:
+    elif predictions_proba < 0.2:
         return 'ACCEPTED'
     else:
         return 'REJECTED'
@@ -168,7 +168,7 @@ def predict():
         accepted_predictions_proba = model.predict_proba(scaler.transform(imputer.transform(accepted_clients[feature_names])))[:, 1]
         
         # Filter accepted clients
-        accepted_clients = accepted_clients[accepted_predictions_proba > 0.45]
+        accepted_clients = accepted_clients[accepted_predictions_proba > 0.25]
 
         if not accepted_clients.empty:
             # Calculate SHAP values for accepted clients
@@ -192,7 +192,7 @@ def predict():
         rejected_predictions_proba = model.predict_proba(scaler.transform(imputer.transform(rejected_clients[feature_names])))[:, 1]
         
         # Filter accepted clients
-        rejected_clients = rejected_clients[rejected_predictions_proba < 0.35]
+        rejected_clients = rejected_clients[rejected_predictions_proba < 0.2]
 
         if not rejected_clients.empty:
             # Calculate SHAP values for accepted clients

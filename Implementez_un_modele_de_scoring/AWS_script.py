@@ -137,11 +137,11 @@ if st.button("Get Prediction"):
                 st.session_state.show_graph = True
 
                 # Define the colors and ranges for the segmented bar
-                red_end = 0.35
-                orange_start = red_end
-                orange_end = 0.45
-                blue_start = orange_end
-                blue_end = 1.0
+                blue_end = 0.2
+                orange_start = blue_end
+                orange_end = 0.25
+                red_start = orange_end
+                red_end = 1.0
 
                 # Create a Plotly figure
                 fig = go.Figure()
