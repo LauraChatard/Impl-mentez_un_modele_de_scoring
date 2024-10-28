@@ -343,32 +343,35 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             ax1.legend()
             st.pyplot(fig1)
 
-            # 2. Graphique de distribution entre Age et Number of Children
-            all_clients_df['age'] = -(all_clients_df['DAYS_BIRTH'] / 365)  # Calculer l'âge
-            fig2, ax2 = plt.subplots(figsize=(6, 6))
-
-            # Colorer les clients selon leur statut pour le second graphique
-            for target_value, (status, color) in zip([0, 1], colors.items()):
-                # Filtrer les clients selon le statut
-                status_clients = all_clients_df[all_clients_df['TARGET'] == target_value]
-                ax2.scatter(
-                    status_clients['age'],
-                    status_clients['CNT_CHILDREN'],
-                    alpha=0.7,
-                    color=color,
-                    label=status.capitalize()  # Label pour la légende
-                )
-
-            # Ajouter le client spécifique
-            ax2.scatter(client_age, client_children, color='black', s=100, label='Client', edgecolor='black')
-
-            ax2.set_xlabel("Age (Years)")
-            ax2.set_ylabel("Number of Children")
-            ax2.set_title("Age vs Number of Children")
-            ax2.legend()
+            # 2. Graphique de comparaison des âges moyens entre clients acceptés/refusés et le client
+            fig2, ax2 = plt.subplots(figsize=(6, 4))
+            accepted_age_avg = -all_clients_df[all_clients_df['TARGET'] == 0]['DAYS_BIRTH'].mean() / 365
+            rejected_age_avg = -all_clients_df[all_clients_df['TARGET'] == 1]['DAYS_BIRTH'].mean() / 365
+            ax2.bar(['Accepted', 'Rejected', 'Client'], [accepted_age_avg, rejected_age_avg, client_age],
+                    color=[colors['accepted'], colors['rejected'], 'black'])
+            ax2.set_ylabel("Age (Years)")
+            ax2.set_title("Average Age Comparison")
             st.pyplot(fig2)
 
-            plt.close(fig1)  # Pour éviter de dupliquer le graphique dans le flux de sortie
+            # 3. Graphiques camembert pour la répartition de Gender, Loan Type et Income Type pour clients acceptés et refusés
+            for attribute, title in zip(['CODE_GENDER', 'NAME_CONTRACT_TYPE', 'NAME_INCOME_TYPE'],
+                                        ['Gender Distribution', 'Loan Type Distribution', 'Income Type Distribution']):
+                fig, (ax3, ax4) = plt.subplots(1, 2, figsize=(12, 6))
+                
+                # Répartition pour clients acceptés
+                accepted_values = all_clients_df[all_clients_df['TARGET'] == 0][attribute].value_counts()
+                ax3.pie(accepted_values, labels=accepted_values.index, autopct='%1.1f%%', colors=['#005B5C', '#8B0000'])
+                ax3.set_title(f"{title} - Accepted Clients")
+                
+                # Répartition pour clients refusés
+                rejected_values = all_clients_df[all_clients_df['TARGET'] == 1][attribute].value_counts()
+                ax4.pie(rejected_values, labels=rejected_values.index, autopct='%1.1f%%', colors=['#005B5C', '#8B0000'])
+                ax4.set_title(f"{title} - Rejected Clients")
+                
+                st.pyplot(fig)
+                plt.close(fig)
+
+            plt.close(fig1)
             plt.close(fig2)
 
     # Show Feature Importance button only if the prediction is valid
