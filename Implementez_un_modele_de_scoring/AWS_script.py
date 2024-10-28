@@ -136,8 +136,13 @@ if st.button("Get Prediction"):
             else:
                 decision = st.session_state.prediction_data['decision']
                 prediction_prob = st.session_state.prediction_data['probability']
+                
                 st.markdown(f"<h2 style='font-size: 30px;'>Decision: {decision}</h2>", unsafe_allow_html=True)
                 st.session_state.show_graph = True
+
+                # Enregistrer la décision et la probabilité si elles n'existent pas dans la session
+                if "decision" not in st.session_state:
+                      st.session_state.decision = st.session_state.prediction_data['decision']
 
                 # Define the colors and ranges for the segmented bar
                 blue_end = 0.2
@@ -247,9 +252,13 @@ if st.button("Get Prediction"):
 
                 # Display the Plotly figure in Streamlit
                 st.plotly_chart(fig)
-
         else:
             st.error("Erreur de format dans la réponse de l'API.")
+
+st.markdown(
+    f"<h2 style='font-size: 30px;'>Decision: {st.session_state.decision}</h2>", 
+    unsafe_allow_html=True
+)
 
 # Client Info collapsible section in sidebar
 if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
