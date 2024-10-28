@@ -257,10 +257,10 @@ if st.button("Get Prediction"):
         else:
             st.error("Erreur de format dans la réponse de l'API.")
 
-st.markdown(
-    f"<h2 style='font-size: 30px;'>Decision: {st.session_state.decision}</h2>", 
-    unsafe_allow_html=True
-)
+        st.markdown(
+            f"<h2 style='font-size: 30px;'>Decision: {st.session_state.decision}</h2>", 
+            unsafe_allow_html=True
+        )
 
 # Client Info collapsible section in sidebar
 if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
