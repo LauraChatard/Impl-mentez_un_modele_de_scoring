@@ -97,6 +97,8 @@ if 'income_comparison_data' not in st.session_state:
     st.session_state.income_comparison_data = None
 if 'show_feature_importance' not in st.session_state:
     st.session_state.show_feature_importance = False
+if 'compare_client' not in st.session_state:
+    st.session_state.compare_client = False
 
 # Streamlit interface
 # CSS pour définir la taille du titre spécifique
@@ -251,6 +253,9 @@ if st.button("Get Prediction"):
         else:
             st.error("Erreur de format dans la réponse de l'API.")
 
+    if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
+        st.session_state.client_info = True
+
     # Client Info collapsible section in sidebar
     if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
         with st.sidebar.expander("Client Info"):
@@ -315,6 +320,9 @@ if st.button("Get Prediction"):
                 
         # Paramètres de couleur pour le fond noir et le texte blanc
         plt.style.use('dark_background')
+
+        if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
+            st.session_state.compare_client = True
 
         # Bouton pour afficher la comparaison des caractéristiques du client
         if st.sidebar.button("Compare Client") and "income_comparison_data" in st.session_state:
