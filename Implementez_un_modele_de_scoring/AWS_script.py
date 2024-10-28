@@ -253,6 +253,7 @@ if st.button("Get Prediction"):
 
 # Client Info collapsible section in sidebar
 if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
+    st.session_state.client_info = True
     with st.sidebar.expander("Client Info"):
         if client_id:
             if st.session_state.client_info is None:
@@ -311,12 +312,13 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
 
             else:
                 st.sidebar.error(st.session_state.client_info["error"])
-            st.write("Please enter a Client ID and click 'Get Prediction'.")
+
     # Paramètres de couleur pour le fond noir et le texte blanc
     plt.style.use('dark_background')
 
     # Bouton pour afficher la comparaison des caractéristiques du client
     if st.sidebar.button("Compare Client") and "income_comparison_data" in st.session_state:
+        st.session_state.income_comparison_data = True
         # Récupérer les données de comparaison
         labels, client_income, client_credit, client_age, client_children = st.session_state.income_comparison_data
 
