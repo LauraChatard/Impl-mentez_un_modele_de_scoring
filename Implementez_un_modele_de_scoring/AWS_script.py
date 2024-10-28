@@ -324,37 +324,48 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
         # Graphiques
         if not all_clients_df.empty:
             # 1. Graphique de distribution entre Income et Credit
-            fig1, ax1 = plt.subplots(figsize=(6, 6))
+            fig1 = go.Figure()
 
             for target_value, (status, color) in zip([0, 1], colors.items()):
-            # Filtrer les clients selon le statut
+                # Filtrer les clients selon le statut
                 status_clients = all_clients_df[all_clients_df['TARGET'] == target_value]
-                ax1.scatter(
-                    status_clients['AMT_INCOME_TOTAL'],
-                    status_clients['AMT_CREDIT'],
-                    alpha=0.7,
-                    color=color,
-                    label=status.capitalize()  # Label pour la légende
-                )
+                fig1.add_trace(go.Scatter(
+                    x=status_clients['AMT_INCOME_TOTAL'],
+                    y=status_clients['AMT_CREDIT'],
+                    mode='markers',
+                    marker=dict(color=color, opacity=0.7),
+                    name=status.capitalize()  # Label pour la légende
+                ))
 
             # Ajouter le client spécifique
-            ax1.scatter(client_income, client_credit, color='white', s=100, label='Client', edgecolor='white')
-
-            # Ajout du point pour le client spécifique avec hover info
             fig1.add_trace(go.Scatter(
                 x=[client_income],
                 y=[client_credit],
                 mode='markers+text',
-                marker=dict(color='white', size=TEXT_SIZES['comment'], line=dict(color='white', width=2)),
+                marker=dict(color='white', size=10, line=dict(color='white', width=2)),
                 name="Client",
-                text=[f"Income: €{client_income}<br>Credit: €{client_credit}"],  # Texte pour hover
-                hoverinfo="text"  # Activer l'info-bulle
-            ))    
-            ax1.set_xlabel("Income (€)")
-            ax1.set_ylabel("Credit (€)")
-            ax1.set_title("Income vs Credit Distribution")
-            ax1.legend()
-            st.pyplot(fig1)
+                text=[f"Income: €{client_income}<br>Credit: €{client_credit}"],
+                hoverinfo="text"
+            ))
+
+            fig1.update_layout(
+                title="Income vs Credit Distribution",
+                xaxis_title="Income (€)",
+                yaxis_title="Credit (€)",
+                legend=dict(x=0, y=1)
+            )
+
+            st.plotly_chart(fig1)
+
+            # 2. Graphique de comparaison des âges moyens entre clients acceptés/refusés et le client
+            fig2, ax2 = plt.subplots(figsize=(6, 4))
+            accepted_age_avg = -all_clients_df[all_clients_df['TARGET'] == 0]['DAYS_BIRTH'].mean() / 365
+            rejected_age_avg = -all_clients_df[all_clients_df['TARGET'] == 1]['DAYS_BIRTH'].mean() / 365
+            ax2.bar(['Accepted', 'Rejected', 'Client'], [accepted_age_avg, rejected_age_avg, client_age],
+                    color=[colors['accepted'], colors['rejected'], 'white'])
+            ax2.set_ylabel("Age (Years)")
+            ax2.set_title("Average Age Comparison")
+            st.pyplot(fig2)
 
             # 2. Graphique de comparaison des âges moyens entre clients acceptés/refusés et le client
             fig2, ax2 = plt.subplots(figsize=(6, 4))
