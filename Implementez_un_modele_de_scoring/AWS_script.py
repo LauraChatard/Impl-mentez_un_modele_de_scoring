@@ -341,7 +341,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             ax1.scatter(client_income, client_credit, color='white', s=100, label='Client', edgecolor='white')
 
             # Ajout du point pour le client spécifique avec hover info
-            fig.add_trace(go.Scatter(
+            fig1.add_trace(go.Scatter(
                 x=[client_income],
                 y=[client_credit],
                 mode='markers+text',
