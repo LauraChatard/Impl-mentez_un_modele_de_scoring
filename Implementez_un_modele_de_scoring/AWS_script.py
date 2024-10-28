@@ -341,7 +341,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             fig1.add_trace(go.Scatter(
                 x=[client_income],
                 y=[client_credit],
-                mode='markers+text',
+                mode='markers',
                 marker=dict(color='white', size=10, line=dict(color='white', width=2)),
                 name="Client",
                 text=[f"Income: €{client_income}<br>Credit: €{client_credit}"],
@@ -357,82 +357,64 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
 
             st.plotly_chart(fig1)
 
-            # 2. Graphique de comparaison des âges moyens entre clients acceptés/refusés et le client
-            fig2, ax2 = plt.subplots(figsize=(6, 4))
-            accepted_age_avg = -all_clients_df[all_clients_df['TARGET'] == 0]['DAYS_BIRTH'].mean() / 365
-            rejected_age_avg = -all_clients_df[all_clients_df['TARGET'] == 1]['DAYS_BIRTH'].mean() / 365
-            ax2.bar(['Accepted', 'Rejected', 'Client'], [accepted_age_avg, rejected_age_avg, client_age],
-                    color=[colors['accepted'], colors['rejected'], 'white'])
-            ax2.set_ylabel("Age (Years)")
-            ax2.set_title("Average Age Comparison")
-            st.pyplot(fig2)
+            # 2. Graphique de comparaison des âges moyens
+        accepted_age_avg = -all_clients_df[all_clients_df['TARGET'] == 0]['DAYS_BIRTH'].mean() / 365
+        rejected_age_avg = -all_clients_df[all_clients_df['TARGET'] == 1]['DAYS_BIRTH'].mean() / 365
+        
+        fig2 = go.Figure()
+        fig2.add_trace(go.Bar(
+            x=['Accepted', 'Rejected', 'Client'],
+            y=[accepted_age_avg, rejected_age_avg, client_age],
+            marker_color=['#00cc96', '#ff6347', 'white'],  # Utiliser les couleurs acceptées et refusées
+        ))
 
-            # 2. Graphique de comparaison des âges moyens entre clients acceptés/refusés et le client
-            fig2, ax2 = plt.subplots(figsize=(6, 4))
-            accepted_age_avg = -all_clients_df[all_clients_df['TARGET'] == 0]['DAYS_BIRTH'].mean() / 365
-            rejected_age_avg = -all_clients_df[all_clients_df['TARGET'] == 1]['DAYS_BIRTH'].mean() / 365
-            ax2.bar(['Accepted', 'Rejected', 'Client'], [accepted_age_avg, rejected_age_avg, client_age],
-                    color=[colors['accepted'], colors['rejected'], 'white'])
-            ax2.set_ylabel("Age (Years)")
-            ax2.set_title("Average Age Comparison")
-            st.pyplot(fig2)
+        fig2.update_layout(
+            title="Average Age Comparison",
+            yaxis_title="Age (Years)"
+        )
+        
+        st.plotly_chart(fig2)
 
-            # 3. Graphiques camembert pour la répartition de Gender, Loan Type et Income Type pour clients acceptés et refusés
-            for attribute, title in zip(['CODE_GENDER', 'NAME_CONTRACT_TYPE', 'NAME_INCOME_TYPE'],
-                                        ['Gender', 'Loan Type', 'Income Type']):
-                fig, (ax3, ax4) = plt.subplots(1, 2, figsize=(12, 6))
-                
-                # Couleur de texte et paramètres pour le texte
-                text_color = ACCESSIBLE_COLORS['text']
-                title_size = TEXT_SIZES['title']
-                text_size = TEXT_SIZES['text']
-                
-                # Ajout d'un titre global centré pour les deux graphiques
-                fig.suptitle(title.upper(), fontsize=title_size + 2, color=text_color, y=1.05)  # Ajustement de la position du titre global
+        # 3. Graphiques camembert pour la répartition de Gender, Loan Type et Income Type pour clients acceptés et refusés
+        for attribute, title in zip(['CODE_GENDER', 'NAME_CONTRACT_TYPE', 'NAME_INCOME_TYPE'],
+                                     ['Gender', 'Loan Type', 'Income Type']):
+            # Répartition pour clients acceptés
+            accepted_values = all_clients_df[all_clients_df['TARGET'] == 0][attribute].value_counts()
+            accepted_labels = accepted_values.index.tolist()
+            accepted_values = accepted_values.values.tolist()
+            
+            # Répartition pour clients refusés
+            rejected_values = all_clients_df[all_clients_df['TARGET'] == 1][attribute].value_counts()
+            rejected_labels = rejected_values.index.tolist()
+            rejected_values = rejected_values.values.tolist()
 
-                # Augmentation de l'espacement entre les graphiques pour éviter les chevauchements
-                fig.subplots_adjust(wspace=1.2, top=0.85)  # Ajustement de l'espacement horizontal
+            # Création du graphique
+            fig = go.Figure()
 
-                # Répartition pour clients acceptés
-                accepted_values = all_clients_df[all_clients_df['TARGET'] == 0][attribute].value_counts()
-                wedges, texts, autotexts = ax3.pie(
-                    accepted_values,
-                    labels=accepted_values.index,
-                    autopct='%1.1f%%',
-                    colors=[ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected']]
-                )
-                # Style du texte dans le graphique de clients acceptés
-                ax3.set_title(f"{title} - Accepted", fontsize=title_size)
-                for text in texts:
-                    text.set_color(text_color)
-                    text.set_fontsize(text_size)
-                for autotext in autotexts:
-                    autotext.set_color(text_color)
-                    autotext.set_fontsize(TEXT_SIZES['comment'])
+            # Ajout du camembert pour les clients acceptés
+            fig.add_trace(go.Pie(
+                labels=accepted_labels,
+                values=accepted_values,
+                name='Accepted',
+                marker=dict(colors=[ACCESSIBLE_COLORS['accepted']] * len(accepted_labels))
+            ))
 
-                # Répartition pour clients refusés
-                rejected_values = all_clients_df[all_clients_df['TARGET'] == 1][attribute].value_counts()
-                wedges, texts, autotexts = ax4.pie(
-                    rejected_values,
-                    labels=rejected_values.index,
-                    autopct='%1.1f%%',
-                    colors=[ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected']]
-                )
-                # Style du texte dans le graphique de clients refusés
-                ax4.set_title(f"{title} - Rejected", fontsize=title_size)
-                for text in texts:
-                    text.set_color(text_color)
-                    text.set_fontsize(text_size)
-                for autotext in autotexts:
-                    autotext.set_color(text_color)
-                    autotext.set_fontsize(TEXT_SIZES['comment'])
+            # Ajout du camembert pour les clients refusés
+            fig.add_trace(go.Pie(
+                labels=rejected_labels,
+                values=rejected_values,
+                name='Rejected',
+                marker=dict(colors=[ACCESSIBLE_COLORS['rejected']] * len(rejected_labels)),
+                visible=False  # Masquer par défaut
+            ))
 
-                # Affichage du graphique dans Streamlit
-                st.pyplot(fig)
-                plt.close(fig)
+            fig.update_layout(
+                title=f"{title} Distribution",
+                showlegend=True
+            )
 
-            plt.close(fig1)
-            plt.close(fig2)
+            # Affichage du graphique dans Streamlit
+            st.plotly_chart(fig)
 
     # Show Feature Importance button only if the prediction is valid
     if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
