@@ -182,11 +182,11 @@ if st.button("Get Prediction"):
                 ))
                 fig.add_trace(go.Bar(
                     y=['Loan Acceptance Probability'],
-                    x=[blue_end - blue_start],
+                    x=[red_end - red_start],
                     name='Accepted',
                     orientation='h',
                     marker=dict(color=ACCESSIBLE_COLORS['accepted']),
-                    base=blue_start,
+                    base=red_start,
                     hoverinfo='skip'  # Disable hover for bars
                 ))
 
@@ -196,7 +196,7 @@ if st.button("Get Prediction"):
                     barmode='stack',
                     xaxis=dict(
                         range=[0, 1],
-                        tickvals=[0, red_end, orange_end, blue_end],  # Valeurs de début et de fin
+                        tickvals=[0, red_end, orange_end, red_end],  # Valeurs de début et de fin
                         ticktext=['0', '0.35', '0.45', '1'],  # Texte des ticks
                         title='Probability',
                         showgrid=False
@@ -231,7 +231,7 @@ if st.button("Get Prediction"):
                         ),
                         # Annotation for "Accepted" above the third bar
                         dict(
-                            x=blue_start + (blue_end - blue_start) / 2,  # Position in the middle of the "Accepted" bar
+                            x=red_start + (red_end - red_start) / 2,  # Position in the middle of the "Accepted" bar
                             y=-0.5,  # Adjusted Y position above the bar
                             xref='x',
                             yref='y',
@@ -309,6 +309,8 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             else:
                 st.sidebar.error(st.session_state.client_info["error"])
             st.write("Please enter a Client ID and click 'Get Prediction'.")
+    # Paramètres de couleur pour le fond noir et le texte blanc
+    plt.style.use('dark_background')
 
     # Bouton pour afficher la comparaison des caractéristiques du client
     if st.sidebar.button("Compare Client") and "income_comparison_data" in st.session_state:
@@ -317,6 +319,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
 
         # Extraire uniquement les couleurs 'accepted' et 'rejected'
         colors = {'accepted': ACCESSIBLE_COLORS['accepted'], 'rejected': ACCESSIBLE_COLORS['rejected']}
+        text_color = ACCESSIBLE_COLORS['text']
 
         # Graphiques
         if not all_clients_df.empty:
@@ -335,7 +338,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 )
 
             # Ajouter le client spécifique
-            ax1.scatter(client_income, client_credit, color='black', s=100, label='Client', edgecolor='black')
+            ax1.scatter(client_income, client_credit, color='white', s=100, label='Client', edgecolor='white')
 
             ax1.set_xlabel("Income (€)")
             ax1.set_ylabel("Credit (€)")
@@ -348,7 +351,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             accepted_age_avg = -all_clients_df[all_clients_df['TARGET'] == 0]['DAYS_BIRTH'].mean() / 365
             rejected_age_avg = -all_clients_df[all_clients_df['TARGET'] == 1]['DAYS_BIRTH'].mean() / 365
             ax2.bar(['Accepted', 'Rejected', 'Client'], [accepted_age_avg, rejected_age_avg, client_age],
-                    color=[colors['accepted'], colors['rejected'], 'black'])
+                    color=[colors['accepted'], colors['rejected'], 'white'])
             ax2.set_ylabel("Age (Years)")
             ax2.set_title("Average Age Comparison")
             st.pyplot(fig2)
