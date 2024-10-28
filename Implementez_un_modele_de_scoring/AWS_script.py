@@ -402,6 +402,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 # Ajout du camembert pour les clients acceptés
                 fig.add_trace(go.Pie(
                     labels=accepted_labels,
+                    values=accepted_values,
                     name='Accepted',
                     marker=dict(colors=accepted_colors)
                 ), row=1, col=1)
@@ -415,6 +416,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 # Ajout du camembert pour les clients refusés
                 fig.add_trace(go.Pie(
                     labels=rejected_labels,
+                    values=rejected_values,
                     name='Rejected',
                     marker=dict(colors=rejected_colors)
                 ), row=1, col=2)
