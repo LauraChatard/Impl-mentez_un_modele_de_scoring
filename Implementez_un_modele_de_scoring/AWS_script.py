@@ -138,13 +138,9 @@ if st.button("Get Prediction"):
             else:
                 decision = st.session_state.prediction_data['decision']
                 prediction_prob = st.session_state.prediction_data['probability']
-                
                 st.markdown(f"<h2 style='font-size: 30px;'>Decision: {decision}</h2>", unsafe_allow_html=True)
                 st.session_state.show_graph = True
-
-                # Enregistrer la décision et la probabilité si elles n'existent pas dans la session
-                if "decision" not in st.session_state:
-                      st.session_state.decision = st.session_state.prediction_data['decision']
+                st.session_state.decision = st.session_state.prediction_data['decision']
 
                 # Define the colors and ranges for the segmented bar
                 blue_end = 0.2
