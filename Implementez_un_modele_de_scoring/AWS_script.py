@@ -359,62 +359,67 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             st.plotly_chart(fig1)
 
             # 2. Graphique de comparaison des âges moyens
-        accepted_age_avg = -all_clients_df[all_clients_df['TARGET'] == 0]['DAYS_BIRTH'].mean() / 365
-        rejected_age_avg = -all_clients_df[all_clients_df['TARGET'] == 1]['DAYS_BIRTH'].mean() / 365
-        
-        fig2 = go.Figure()
-        fig2.add_trace(go.Bar(
-            x=['Accepted', 'Rejected', 'Client'],
-            y=[accepted_age_avg, rejected_age_avg, client_age],
-            marker_color=['#00cc96', '#ff6347', 'white'],  # Utiliser les couleurs acceptées et refusées
-        ))
-
-        fig2.update_layout(
-            title="Average Age Comparison",
-            yaxis_title="Age (Years)"
-        )
-        
-        st.plotly_chart(fig2)
-
-# 3. Graphiques camembert pour la répartition de Gender, Loan Type et Income Type pour clients acceptés et refusés
-        for attribute, title in zip(['CODE_GENDER', 'NAME_CONTRACT_TYPE', 'NAME_INCOME_TYPE'],
-                                     ['Gender', 'Loan Type', 'Income Type']):
-            # Création de la figure avec des sous-graphiques
-            fig = make_subplots(rows=1, cols=2, subplot_titles=('Accepted', 'Rejected'))
-
-            # Répartition pour clients acceptés
-            accepted_values = all_clients_df[all_clients_df['TARGET'] == 0][attribute].value_counts()
-            accepted_labels = accepted_values.index.tolist()
-            accepted_values = accepted_values.values.tolist()
+            accepted_age_avg = -all_clients_df[all_clients_df['TARGET'] == 0]['DAYS_BIRTH'].mean() / 365
+            rejected_age_avg = -all_clients_df[all_clients_df['TARGET'] == 1]['DAYS_BIRTH'].mean() / 365
             
-            # Ajout du camembert pour les clients acceptés
-            fig.add_trace(go.Pie(
-                labels=accepted_labels,
-                values=accepted_values,
-                name='Accepted',
-                marker=dict(colors=[ACCESSIBLE_COLORS['accepted']] * len(accepted_labels))
-            ), row=1, col=1)
+            fig2 = go.Figure()
+            fig2.add_trace(go.Bar(
+                x=['Accepted', 'Rejected', 'Client'],
+                y=[accepted_age_avg, rejected_age_avg, client_age],
+                marker_color=['#00cc96', '#ff6347', 'white'],  # Utiliser les couleurs acceptées et refusées
+            ))
 
-            # Répartition pour clients refusés
-            rejected_values = all_clients_df[all_clients_df['TARGET'] == 1][attribute].value_counts()
-            rejected_labels = rejected_values.index.tolist()
-            rejected_values = rejected_values.values.tolist()
-
-            # Ajout du camembert pour les clients refusés
-            fig.add_trace(go.Pie(
-                labels=rejected_labels,
-                values=rejected_values,
-                name='Rejected',
-                marker=dict(colors=[ACCESSIBLE_COLORS['rejected']] * len(rejected_labels))
-            ), row=1, col=2)
-
-            fig.update_layout(
-                title=f"{title} Distribution",
-                showlegend=True
+            fig2.update_layout(
+                title="Average Age Comparison",
+                yaxis_title="Age (Years)"
             )
+            
+            st.plotly_chart(fig2)
 
-            # Affichage du graphique dans Streamlit
-            st.plotly_chart(fig)
+            # 3. Graphiques camembert pour la répartition de Gender, Loan Type et Income Type pour clients acceptés et refusés
+            for attribute, title in zip(['CODE_GENDER', 'NAME_CONTRACT_TYPE', 'NAME_INCOME_TYPE'],
+                                        ['Gender', 'Loan Type', 'Income Type']):
+                # Création de la figure avec des sous-graphiques
+                fig = make_subplots(
+                rows=1, 
+                cols=2, 
+                subplot_titles=('Accepted', 'Rejected'),
+                specs=[[{'type': 'pie'}, {'type': 'pie'}]]  
+                )
+
+                # Répartition pour clients acceptés
+                accepted_values = all_clients_df[all_clients_df['TARGET'] == 0][attribute].value_counts()
+                accepted_labels = accepted_values.index.tolist()
+                accepted_values = accepted_values.values.tolist()
+                
+                # Ajout du camembert pour les clients acceptés
+                fig.add_trace(go.Pie(
+                    labels=accepted_labels,
+                    values=accepted_values,
+                    name='Accepted',
+                    marker=dict(colors=[ACCESSIBLE_COLORS['accepted']] * len(accepted_labels))
+                ), row=1, col=1)
+
+                # Répartition pour clients refusés
+                rejected_values = all_clients_df[all_clients_df['TARGET'] == 1][attribute].value_counts()
+                rejected_labels = rejected_values.index.tolist()
+                rejected_values = rejected_values.values.tolist()
+
+                # Ajout du camembert pour les clients refusés
+                fig.add_trace(go.Pie(
+                    labels=rejected_labels,
+                    values=rejected_values,
+                    name='Rejected',
+                    marker=dict(colors=[ACCESSIBLE_COLORS['rejected']] * len(rejected_labels))
+                ), row=1, col=2)
+
+                fig.update_layout(
+                    title=f"{title} Distribution",
+                    showlegend=True
+                )
+
+                # Affichage du graphique dans Streamlit
+                st.plotly_chart(fig)
 
     # Show Feature Importance button only if the prediction is valid
     if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
