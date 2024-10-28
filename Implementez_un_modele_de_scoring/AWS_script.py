@@ -97,6 +97,8 @@ if 'income_comparison_data' not in st.session_state:
     st.session_state.income_comparison_data = None
 if 'show_feature_importance' not in st.session_state:
     st.session_state.show_feature_importance = False
+if 'decision' not in st.session_state:
+    st.session_state.decision = None
 
 # Streamlit interface
 # CSS pour définir la taille du titre spécifique
