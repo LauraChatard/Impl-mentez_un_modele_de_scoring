@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import plotly.colors
 
 # Function to get prediction from API
 def get_prediction(sk_id_curr):
@@ -27,9 +28,6 @@ def get_client_info(client_id):
         return response.json()
     else:
         return {"error": f"Error {response.status_code}: {response.text}"}
-
-GRAFIC_COLORS_accepted = ['0f92ff', '0fbaff', '65dbe7', '5d64f3']
-GRAFIC_COLORS_rejected = ['fc172f', 'fc3317', 'fc6a17', 'fc6317']
 
 # Define a color palette respecting WCAG standards
 ACCESSIBLE_COLORS = {
@@ -401,7 +399,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                     labels=accepted_labels,
                     values=accepted_values,
                     name='Accepted',
-                    marker=dict(colors=GRAFIC_COLORS_accepted)
+                    marker=dict(colors=plotly.colors.qualitative.Vivid)
                 ), row=1, col=1)
 
                 # Répartition pour clients refusés
@@ -414,7 +412,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                     labels=rejected_labels,
                     values=rejected_values,
                     name='Rejected',
-                    marker=dict(colors=GRAFIC_COLORS_rejected)
+                    marker=dict(colors=plotly.colors.qualitative.Vivid)
                 ), row=1, col=2)
 
                 fig.update_layout(
