@@ -496,5 +496,9 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                     st.error(f"Error fetching mean SHAP importances: {response.status_code} - {response.text}")
             else:
                 st.error("No SHAP importances available. Please check the prediction response.")
+        else:
+            st.error("Error SHAP 1")
+    else:
+        st.error("Error SHAP session sate")
             
     st.session_state.client_info = None 
