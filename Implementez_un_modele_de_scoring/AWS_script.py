@@ -431,74 +431,72 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
     if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
         st.session_state.show_feature_importance = True
 
-        # Bouton pour afficher l'importance des features (Show Feature Importance)
-        if st.sidebar.button("Feature Importances") and st.session_state.prediction_data:
-            st.markdown("### Top 5 Feature Importances")
+    # Bouton pour afficher l'importance des features (Show Feature Importance)
+    if st.sidebar.button("Feature Importances") and st.session_state.prediction_data:
+        st.markdown("### Top 5 Feature Importances")
 
-            # Extract SHAP importances for the client
-            shap_importances = st.session_state.prediction_data.get('shap_importances', [])
+        # Extract SHAP importances for the client
+        shap_importances = st.session_state.prediction_data.get('shap_importances', [])
 
-            if shap_importances:
-                # Convert to DataFrame for easier handling
-                shap_df = pd.DataFrame(shap_importances)
-                
-                # Select top 5 features based on absolute SHAP values
-                top_5_features = shap_df.loc[shap_df['SHAP Value'].abs().nlargest(5).index]
+        if shap_importances:
+            # Convert to DataFrame for easier handling
+            shap_df = pd.DataFrame(shap_importances)
+            
+            # Select top 5 features based on absolute SHAP values
+            top_5_features = shap_df.loc[shap_df['SHAP Value'].abs().nlargest(5).index]
 
-                # Load SHAP importances and store top features in session state for average accepted loans
-                response = requests.post("http://13.51.100.2:5000/predict", json={"SK_ID_CURR": client_id})
-                if response.status_code == 200:
-                    data = response.json()
-                    avg_shap_importance_df = pd.DataFrame(data['accepted_mean_shap_importances'])
-                    avg_shap_importance_rejected_df = pd.DataFrame(data['rejected_mean_shap_importances'])
+            # Load SHAP importances and store top features in session state for average accepted loans
+            response = requests.post("http://13.51.100.2:5000/predict", json={"SK_ID_CURR": client_id})
+            if response.status_code == 200:
+                data = response.json()
+                avg_shap_importance_df = pd.DataFrame(data['accepted_mean_shap_importances'])
+                avg_shap_importance_rejected_df = pd.DataFrame(data['rejected_mean_shap_importances'])
 
-                    # Prepare data for the initial combined bar chart
-                    combined_data_initial = pd.DataFrame({
-                        'Client SHAP Value': top_5_features.set_index('Feature')['SHAP Value'],
-                    })
+                # Prepare data for the initial combined bar chart
+                combined_data_initial = pd.DataFrame({
+                    'Client SHAP Value': top_5_features.set_index('Feature')['SHAP Value'],
+                })
 
-                    # Prepare data for combined bar chart
-                    combined_data = pd.DataFrame({
-                        'Client SHAP Value': top_5_features.set_index('Feature')['SHAP Value'],
-                        'Average Accepted SHAP Value': avg_shap_importance_df.set_index('Feature')['Mean SHAP Value'],
-                        'Average Rejected SHAP Value': avg_shap_importance_rejected_df.set_index('Feature')['Mean SHAP Value']
-                    }).abs()  # Convert to absolute values
+                # Prepare data for combined bar chart
+                combined_data = pd.DataFrame({
+                    'Client SHAP Value': top_5_features.set_index('Feature')['SHAP Value'],
+                    'Average Accepted SHAP Value': avg_shap_importance_df.set_index('Feature')['Mean SHAP Value'],
+                    'Average Rejected SHAP Value': avg_shap_importance_rejected_df.set_index('Feature')['Mean SHAP Value']
+                }).abs()  # Convert to absolute values
 
-                    # Define colors based on the values of 'Client SHAP Value'
-                    colors = [
-                        ACCESSIBLE_COLORS['rejected'] if value < 0 else ACCESSIBLE_COLORS['accepted']
-                        for value in combined_data_initial['Client SHAP Value']
-                    ]
+                # Define colors based on the values of 'Client SHAP Value'
+                colors = [
+                    ACCESSIBLE_COLORS['rejected'] if value < 0 else ACCESSIBLE_COLORS['accepted']
+                    for value in combined_data_initial['Client SHAP Value']
+                ]
 
-                    # Plot initial combined bar chart for the top 5 features
-                    fig, ax = plt.subplots()
-                    combined_data_initial['Client SHAP Value'].plot(kind='barh', ax=ax, color=colors)
-                    ax.set_xlabel("SHAP Value")
-                    ax.set_title("Top 5 Feature Importances for Client")
-                    ax.invert_yaxis()  # To display the largest value on top
-                    st.pyplot(fig)
+                # Plot initial combined bar chart for the top 5 features
+                fig, ax = plt.subplots()
+                combined_data_initial['Client SHAP Value'].plot(kind='barh', ax=ax, color=colors)
+                ax.set_xlabel("SHAP Value")
+                ax.set_title("Top 5 Feature Importances for Client")
+                ax.invert_yaxis()  # To display the largest value on top
+                st.pyplot(fig)
 
-                    # Dropdown to select feature for comparison
-                    feature_options = top_5_features['Feature'].tolist()
-                    selected_feature = st.selectbox("Select Feature to Compare", feature_options)
+                # Dropdown to select feature for comparison
+                feature_options = top_5_features['Feature'].tolist()
+                selected_feature = st.selectbox("Select Feature to Compare", feature_options)
 
-                    # Extract selected feature values for comparison
-                    comparison_data = combined_data.loc[[selected_feature]]
+                # Extract selected feature values for comparison
+                comparison_data = combined_data.loc[[selected_feature]]
 
-                    # Plot combined bar chart for the selected feature
-                    fig, ax = plt.subplots()
-                    comparison_data.plot(kind='barh', ax=ax, color=[ACCESSIBLE_COLORS['maybe'], ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected']])
-                    ax.set_xlabel("SHAP Value (Absolute)")
-                    ax.set_title(f"Comparison of SHAP Values for {selected_feature}")
-                    ax.invert_yaxis()  # To display the largest value on top
-                    st.pyplot(fig)
-                else:
-                    st.error(f"Error fetching mean SHAP importances: {response.status_code} - {response.text}")
+                # Plot combined bar chart for the selected feature
+                fig, ax = plt.subplots()
+                comparison_data.plot(kind='barh', ax=ax, color=[ACCESSIBLE_COLORS['maybe'], ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected']])
+                ax.set_xlabel("SHAP Value (Absolute)")
+                ax.set_title(f"Comparison of SHAP Values for {selected_feature}")
+                ax.invert_yaxis()  # To display the largest value on top
+                st.pyplot(fig)
             else:
-                st.error("No SHAP importances available. Please check the prediction response.")
+                st.error(f"Error fetching mean SHAP importances: {response.status_code} - {response.text}")
         else:
-            st.error("Error SHAP 1")
+            st.error("No SHAP importances available. Please check the prediction response.")
     else:
-        st.error("Error SHAP session sate")
+        st.error("Error SHAP session state")
             
     st.session_state.client_info = None 
