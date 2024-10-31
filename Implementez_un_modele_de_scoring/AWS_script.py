@@ -432,7 +432,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
         st.session_state.show_feature_importance = True
 
     # Bouton pour afficher l'importance des features (Show Feature Importance)
-    if st.sidebar.button("Feature Importances") and st.session_state.prediction_data:
+    if st.sidebar.button("Feature Importances") and "selected_feature" in st.session_state:
         st.markdown("### Top 5 Feature Importances")
 
         # Extract SHAP importances for the client
@@ -480,25 +480,21 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
 
                 # Dropdown to select feature for comparison
                 feature_options = top_5_features['Feature'].tolist()
-                st.session_state.selected_feature = st.selectbox("Select Feature to Compare", feature_options)
+                selected_feature = st.selectbox("Select Feature to Compare", feature_options)
 
-               # Extraire les valeurs de la feature sélectionnée
-                if st.session_state.selected_feature:
-                    comparison_data = combined_data.loc[[st.session_state.selected_feature]]
+                # Extract selected feature values for comparison
+                comparison_data = combined_data.loc[[selected_feature]]
 
-                    # Graphe combiné pour la feature sélectionnée
-                    fig, ax = plt.subplots()
-                    comparison_data.plot(kind='barh', ax=ax, color=[
-                        ACCESSIBLE_COLORS['maybe'], 
-                        ACCESSIBLE_COLORS['accepted'], 
-                        ACCESSIBLE_COLORS['rejected']
-                    ])
-                    ax.set_xlabel("SHAP Value (Absolute)")
-                    ax.set_title(f"Comparison of SHAP Values for {st.session_state.selected_feature}")
-                    ax.invert_yaxis()  # Afficher la plus grande valeur en haut
-                    st.pyplot(fig)
+                # Plot combined bar chart for the selected feature
+                fig, ax = plt.subplots()
+                comparison_data.plot(kind='barh', ax=ax, color=[ACCESSIBLE_COLORS['maybe'], ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected']])
+                ax.set_xlabel("SHAP Value (Absolute)")
+                ax.set_title(f"Comparison of SHAP Values for {selected_feature}")
+                ax.invert_yaxis()  # To display the largest value on top
+                st.pyplot(fig)
             else:
                 st.error(f"Error fetching mean SHAP importances: {response.status_code} - {response.text}")
+
         else:
             st.error("No SHAP importances available. Please check the prediction response.")
             
