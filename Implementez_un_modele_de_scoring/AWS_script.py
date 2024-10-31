@@ -42,7 +42,8 @@ ACCESSIBLE_COLORS = {
 TEXT_SIZES = {
     'title': 28,        # Taille pour les titres (par ex. en-têtes)
     'text': 20,         # Taille pour le texte principal (labels, descriptions)
-    'comment': 18       # Taille pour les annotations, commentaires
+    'comment': 18,       # Taille pour les annotations, commentaires
+    'object' : 15
 }
 
 # CSS personnalisé pour changer la taille du texte des boutons
@@ -155,10 +156,10 @@ if st.button("Get Prediction"):
                     x=[prediction_prob],
                     y=['Loan Acceptance Probability'],
                     mode='markers+text',
-                    marker=dict(color=ACCESSIBLE_COLORS['object'], size=TEXT_SIZES['comment'], symbol='octagon-dot'),
+                    marker=dict(color=ACCESSIBLE_COLORS['object'], size=TEXT_SIZES['object'], symbol='octagon-dot'),
                     text=[f"Client {client_id}"],
                     textposition='top right',
-                    textfont=dict(size=TEXT_SIZES['text']),
+                    textfont=dict(size=TEXT_SIZES['text']), color=ACCESSIBLE_COLORS['text'],
                     hoverinfo='text',
                     hovertext=[f"Probability: {prediction_prob:.2f}", f"Client {client_id}"],
                     hoverlabel=dict(font=dict(size=TEXT_SIZES['comment'])),
@@ -423,6 +424,11 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 st.plotly_chart(fig)
 
     # Show Feature Importance button only if the prediction is valid
+    if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
+        st.session_state.show_feature_importance = True
+
+
+# Show Feature Importance button only if the prediction is valid
     if st.session_state.prediction_data and "error" not in st.session_state.prediction_data:
         st.session_state.show_feature_importance = True
 
