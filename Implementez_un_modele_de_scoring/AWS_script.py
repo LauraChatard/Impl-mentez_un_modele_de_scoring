@@ -156,15 +156,19 @@ if st.button("Get Prediction"):
                     x=[prediction_prob],
                     y=['Loan Acceptance Probability'],
                     mode='markers+text',
-                    marker=dict(color=ACCESSIBLE_COLORS['object'], size=TEXT_SIZES['object'], symbol='octagon-dot'),
+                    marker=dict(
+                        color=ACCESSIBLE_COLORS['object'],
+                        size=TEXT_SIZES['object'],
+                        symbol='octagon-dot'
+                    ),
                     text=[f"Client {client_id}"],
                     textposition='top right',
-                    textfont=dict(size=TEXT_SIZES['text']), color=ACCESSIBLE_COLORS['text'],
+                    textfont=dict(size=TEXT_SIZES['text'], color=ACCESSIBLE_COLORS['text']),
                     hoverinfo='text',
                     hovertext=[f"Probability: {prediction_prob:.2f}", f"Client {client_id}"],
                     hoverlabel=dict(font=dict(size=TEXT_SIZES['comment'])),
                     name=f'Client {client_id}',
-                    customdata=[client_id],
+                    customdata=[client_id]
                 ))
 
             # Add bars for each segment (rejected, maybe, accepted)
