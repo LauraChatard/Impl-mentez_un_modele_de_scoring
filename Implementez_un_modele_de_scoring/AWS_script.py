@@ -432,7 +432,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
         st.session_state.show_feature_importance = True
 
         # Bouton pour afficher l'importance des features (Show Feature Importance)
-        if st.sidebar.button("Feature Importances"):
+        if st.sidebar.button("Feature Importances") and st.session_state.prediction_data:
             st.markdown("### Top 5 Feature Importances")
 
             # Extract SHAP importances for the client
