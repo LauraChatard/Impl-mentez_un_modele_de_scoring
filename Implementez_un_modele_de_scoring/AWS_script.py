@@ -462,7 +462,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                     'Client SHAP Value': top_5_features.set_index('Feature')['SHAP Value'],
                     'Average Accepted SHAP Value': avg_shap_importance_df.set_index('Feature')['Mean SHAP Value'],
                     'Average Rejected SHAP Value': avg_shap_importance_rejected_df.set_index('Feature')['Mean SHAP Value']
-                }).abs()  # Convert to absolute values
+                }) 
 
                 # Define colors based on the values of 'Client SHAP Value'
                 colors = [
