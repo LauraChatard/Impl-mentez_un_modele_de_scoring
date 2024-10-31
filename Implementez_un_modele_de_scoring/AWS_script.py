@@ -488,7 +488,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 # Plot combined bar chart for the selected feature
                 fig, ax = plt.subplots()
                 comparison_data.plot(kind='barh', ax=ax, color=[ACCESSIBLE_COLORS['maybe'], ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected']])
-                ax.set_xlabel("SHAP Value (Absolute)")
+                ax.set_xlabel("SHAP Value")
                 ax.set_title(f"Comparison of SHAP Values for {selected_feature}")
                 ax.invert_yaxis()  # To display the largest value on top
                 st.pyplot(fig)
