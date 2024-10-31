@@ -58,7 +58,9 @@ st.markdown(f"""
 st.markdown("""
     <style>
     body {
+        background-color: black !important; /* Définit la couleur de fond en noir */
         font-size: 20px !important;  /* Définit la taille minimale à 18px */
+        color: white !important;  /* Définit la couleur du texte en blanc pour le contraste */
     }
     h1, h2, h3, h4, h5, h6 {
         font-size: 30px !important;  /* Taille des titres */
@@ -493,4 +495,3 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
 
         else:
             st.error("No SHAP importances available. Please check the prediction response.")
-    st.session_state.client_info = None 
