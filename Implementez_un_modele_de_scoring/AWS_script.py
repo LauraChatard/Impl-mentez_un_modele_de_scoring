@@ -480,18 +480,23 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
 
                 # Dropdown to select feature for comparison
                 feature_options = top_5_features['Feature'].tolist()
-                selected_feature = st.selectbox("Select Feature to Compare", feature_options)
+                st.session_state.selected_feature = st.selectbox("Select Feature to Compare", feature_options)
 
-                # Extract selected feature values for comparison
-                comparison_data = combined_data.loc[[selected_feature]]
+               # Extraire les valeurs de la feature sélectionnée
+                if st.session_state.selected_feature:
+                    comparison_data = combined_data.loc[[st.session_state.selected_feature]]
 
-                # Plot combined bar chart for the selected feature
-                fig, ax = plt.subplots()
-                comparison_data.plot(kind='barh', ax=ax, color=[ACCESSIBLE_COLORS['maybe'], ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected']])
-                ax.set_xlabel("SHAP Value (Absolute)")
-                ax.set_title(f"Comparison of SHAP Values for {selected_feature}")
-                ax.invert_yaxis()  # To display the largest value on top
-                st.pyplot(fig)
+                    # Graphe combiné pour la feature sélectionnée
+                    fig, ax = plt.subplots()
+                    comparison_data.plot(kind='barh', ax=ax, color=[
+                        ACCESSIBLE_COLORS['maybe'], 
+                        ACCESSIBLE_COLORS['accepted'], 
+                        ACCESSIBLE_COLORS['rejected']
+                    ])
+                    ax.set_xlabel("SHAP Value (Absolute)")
+                    ax.set_title(f"Comparison of SHAP Values for {st.session_state.selected_feature}")
+                    ax.invert_yaxis()  # Afficher la plus grande valeur en haut
+                    st.pyplot(fig)
             else:
                 st.error(f"Error fetching mean SHAP importances: {response.status_code} - {response.text}")
         else:
