@@ -34,8 +34,8 @@ ACCESSIBLE_COLORS = {
     'rejected': '#fc3317',  # Dark Red
     'maybe': '#FFA500',     # Dark Orange
     'accepted': '#0f92ff',  # Dark Teal
-    'text': '#FFFFFF',      # White for text
-    'object': '#FFFFFF'       # White for lines
+    'text': '#000000',      # black for text
+    'object': '#000000'       # black for lines
 }
 
 # Définition des tailles pour titre, texte et commentaire
@@ -58,9 +58,7 @@ st.markdown(f"""
 st.markdown("""
     <style>
     body {
-        background-color: black !important; /* Définit la couleur de fond en noir */
         font-size: 20px !important;  /* Définit la taille minimale à 18px */
-        color: white !important;  /* Définit la couleur du texte en blanc pour le contraste */
     }
     h1, h2, h3, h4, h5, h6 {
         font-size: 30px !important;  /* Taille des titres */
@@ -346,7 +344,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
                 x=[client_income],
                 y=[client_credit],
                 mode='markers',
-                marker=dict(color='white', size=10, line=dict(color='white', width=2)),
+                marker=dict(color='black', size=10, line=dict(color='black', width=2)),
                 name="Client",
                 text=[f"Income: €{client_income}<br>Credit: €{client_credit}"],
                 hoverinfo="text"
@@ -369,7 +367,7 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
             fig2.add_trace(go.Bar(
                 x=['Accepted', 'Rejected', 'Client'],
                 y=[accepted_age_avg, rejected_age_avg, client_age],
-                marker_color=[ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected'], 'white'],  # Utiliser les couleurs acceptées et refusées
+                marker_color=[ACCESSIBLE_COLORS['accepted'], ACCESSIBLE_COLORS['rejected'], 'black'],  # Utiliser les couleurs acceptées et refusées
             ))
 
             fig2.update_layout(
@@ -495,3 +493,5 @@ if st.session_state.prediction_data and "error" not in st.session_state.predicti
 
         else:
             st.error("No SHAP importances available. Please check the prediction response.")
+            
+    st.session_state.client_info = None 
